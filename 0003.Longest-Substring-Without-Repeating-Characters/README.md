@@ -49,3 +49,80 @@ Output: 0
 
 ## 解题思路
 
+* 利用滑动窗口的思想，右侧指针不断向右扩，直至遇见重复字符，一旦遇到重复字符，左侧边界需要收缩，直至区间中不含重复字符，重复这个过程，每次迭代都要计算子串的长度，并判断是否要更新最长长度，
+
+## 代码
+
+````c++
+class Solution {
+public:
+    /*
+    int lengthOfLongestSubstring(string s) {
+        if (s.empty()) {
+            return 0;
+        }
+        
+        vector<int> dict(256, -1);
+        int len = 0;
+        int pre = -1;
+        
+        for (int i = 0; i < s.size(); ++i) {
+            pre = max(pre, dict[s[i]]);
+            len = max(len, i - pre);
+            dict[s[i]] = i;
+        }
+        return len;
+    }
+    */
+    
+    /* 滑动窗口
+    int lengthOfLongestSubstring(string s) {
+        if (s.empty()) {
+            return 0;
+        }
+        
+        int size = s.size();
+        int left = 0;
+        int right = -1;
+        int len = 0;
+        
+        vector<int> dict(256);
+        while (left < size) {
+            if (right + 1 < size && dict[s[right + 1]] == 0) {
+                ++dict[s[right + 1]];
+                ++right;
+            } else  {
+                --dict[s[left]];
+                ++left;
+            }
+            len = max(len, right - left + 1); // 这个方法是左闭右闭区间
+        }
+        return len;
+    }*/
+    
+    // 滑动窗口 + 桶优化
+    int lengthOfLongestSubstring(string s) {
+        if (s.empty()) {
+            return 0;
+        }
+        
+        int size = s.size();
+        int len = 0;
+        int left = 0;
+        int right = 0;
+        
+        vector<int> dict(256, -1);
+        
+        while (left < size) {
+            right = max(right, dict[s[left]] + 1);
+            dict[s[left]] = left;
+            ++left;
+            len = max(len, left - right);   // 这个方法是左闭右开区间
+        }
+        
+        return len;
+    }
+    
+};
+````
+
