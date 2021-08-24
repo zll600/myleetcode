@@ -42,13 +42,13 @@ Output: [10]
 利用滑动窗口，但有两个不同的方案
 
 * 先记录下每个字母出现的频数，如果窗口中的字母的频数都减为0，则说明当前窗口满足条件，这个方法需要一个额外的数组来记录窗口内出现的字母种类数
-* 先记录每个字母出现最后一次的距离，如果窗口的右边界大于等于当前窗口中所有出现国字母的最远距离，说明当前窗口满足条件
+* 先记录每个字母出现最后一次的位置，如果窗口的右边界大于等于当前窗口中所有出现国字母的最远距离，说明当前窗口满足条件
 * 这道题目目前用c++没过，先用go，但思路相同
 
 ## 代码
 
 ````go
-// 解法一
+// 解法一：记录字母出现的最后一次的位置
 func partitionLabels(S string) []int {
 	var lastIndexOf [26]int
 	for i, v := range S {
@@ -68,7 +68,7 @@ func partitionLabels(S string) []int {
 	return arr
 }
 
-// 解法二
+// 解法二：记录字母出现的频数
 func partitionLabels1(S string) []int {
 	visit, counter, res, sum, lastLength := make([]int, 26), map[byte]int{}, []int{}, 0, 0
 	for i := 0; i < len(S); i++ {
