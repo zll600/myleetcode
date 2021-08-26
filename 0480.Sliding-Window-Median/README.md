@@ -54,11 +54,28 @@ Output: [2.00000,3.00000,3.00000,3.00000,2.00000,3.00000,2.00000]
 ## 解题思路
 
 * 暴力解法，将窗口内的元素都排许，时间复杂度 O(n * k)
-* 
+* 另一种思路是用两个优先队列，大顶堆里面的元素都比小顶堆里面的元素小。小顶堆里面存储排序以后中间靠后的值大的元素，大顶堆里面存储排序以后中间靠前的值小的元素。如果 k 是偶数，那么两个堆都有 k/2 个元素，中间值就是两个堆顶的元素；如果 k 是奇数，那么小顶堆比大顶堆多一个元素，中间值就是小顶堆的堆顶元素。删除一个元素，元素都标记到删除的堆中，取 top 的时候注意需要取出没有删除的元素。时间复杂度 O(n * log k) 空间复杂度 O(k)
+* 也可以使用一个大顶堆和一个小顶堆（对顶堆），大顶堆里面的元素都比小顶堆小。大顶堆存储排序后中间考前值比较小的元素，小顶堆存储排序之后中间靠后值大的元素。
+  * 初始化：将前 k 个元素全部加入 min_heaps 中，然后从 min_heaps 中将 k / 2 个元素加入到 max_heaps 中
+  * 取中位数：如果 k 是偶数，两个堆都有 k / 2 个元素，中位数就是两个堆顶的元素之和的二分之一；如果 k 是奇数，中间值是小顶堆的堆顶元素。
+  * 窗口滑动的过程：
+    * 假定每次滑动之后，min_heaps 和 max_heaps 的大小相差小于等于 1 ，设置当前滑动之前，delta = 0，delta表示因本次窗口滑动而造成的两个堆之间的差值的增量
+    * 删除窗口左边界的元素：left = nums[i - k] ，堆只能删除堆顶的元素
+      * 使用一个 map 记录这次要删除的数，等到这个数到堆顶的时候再删除，
+      * 做了删除标记之后需要，可以视为这时，两个堆中元素的差量已经发生变化，如果 left <= min_heaps.top()，说明 left 在min_heaps 中，--delta，否则 ++delta
+    * 向右扩大窗口：如果 nums[i] <= min_heaps.top() 就加入 min_heaps 中，且 ++delta，否则就加入 max_heaps 中，且 --delta
+    * 调整两个堆的大小：根据 delta 标记
+      * delta == 0 不用调整，
+      * delta < 0 将 max_heap 的元素加入 min_heap 中，
+      * delta > 0 将 min_heap 的元素加入 max_heap 中
+    * 调整完成后，需要清除部分删除元素，如果 堆顶的元素属于被删除元素，则必须调整堆，不能让被删除元素影响中位数的计算，
+      * 这里注意我们只需要清除 会影响计算中位数的 被标记的值（此时肯定在堆顶），其他值可以暂时不用考虑，等到它到堆顶的时候，可以在进行删除
+    * 计算添加中位数
 
 ## 代码
 
 ````c++
+// 解法一： 暴力枚举
 class Solution {
  public:
     vector<double> medianSlidingWindow(vector<int>& nums, int k) {
@@ -115,6 +132,79 @@ class Solution {
             }
         }
         window.push_back(val);
+    }
+};
+
+// 解法二：用两个堆实现，
+class Solution {
+ public:
+    vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+        vector<double> res;
+        int size = nums.size();
+        
+        for (int i = 0; i < k; ++i) {
+            min_heaps_.push(nums[i]);
+        }
+        for (int i = 0; i < k / 2; ++i) {
+            max_heaps_.push(min_heaps_.top());
+            min_heaps_.pop();
+        }
+        res.push_back(GetMedian(k));
+        
+        for (int i = k; i < size; ++i) {
+            int delta = 0;
+            int left = nums[i - k];
+            cache_[left]++;
+            
+            if (!min_heaps_.empty() && left <= min_heaps_.top()) {
+                --delta;
+            } else {
+                ++delta;
+            }
+            
+            if (!min_heaps_.empty() && nums[i] <= min_heaps_.top()) {
+                min_heaps_.push(nums[i]);
+                ++delta;
+            } else {
+                max_heaps_.push(nums[i]);
+                --delta;
+            }
+            
+            if (delta < 0) {
+                min_heaps_.push(max_heaps_.top());
+                max_heaps_.pop();
+            } else if (delta > 0) {
+                max_heaps_.push(min_heaps_.top());
+                min_heaps_.pop();
+            }
+            
+            while (!min_heaps_.empty() && cache_[min_heaps_.top()] > 0) {
+                --cache_[min_heaps_.top()];
+                min_heaps_.pop();
+            }
+            
+            while (!max_heaps_.empty() && cache_[max_heaps_.top()] > 0) {
+                --cache_[max_heaps_.top()];
+                max_heaps_.pop();
+            }
+            
+            res.push_back(GetMedian(k));
+        }
+        
+        return res;
+    }
+    
+ private:
+    priority_queue<int> min_heaps_;
+    priority_queue<int, vector<int>, greater<int>> max_heaps_;
+    unordered_map<int, int> cache_;
+    
+    double GetMedian(int k) {
+        if (k % 2 != 0) {
+            return min_heaps_.top() * 1.0;
+        } else {
+            return (min_heaps_.top() / 2.0 + max_heaps_.top() / 2.0);
+        }
     }
 };
 ````
