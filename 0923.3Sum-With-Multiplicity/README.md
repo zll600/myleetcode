@@ -46,3 +46,111 @@ and two 2s from [2,2,2,2] in 6 ways.
 
 ## 解题思路
 
+这道题解法和 15 题一样，也是利用双指针，不过这次需要用一些排列组合的知识来降低时间复杂度，注意对溢出情况的特殊处理
+
+* 利用双指针
+* 利用 map 做缓存
+
+## 代码
+
+````c++
+// Two pointers
+/*
+class Solution {
+public:
+    int threeSumMulti(vector<int>& nums, int target) {
+        sort(nums.begin(), nums.end());
+        int size = nums.size();
+        int mod = 1000000007;
+        int res = 0;
+        int last = 0;
+        
+        for (int i = 0; i < size - 2; ++i) {
+            int j = i + 1;
+            int k = size - 1;
+            
+            while (j < k) {
+                long sum = 1L * nums[i] + nums[j] + nums[k];
+                
+                if (sum > target) {
+                    while (j < k && nums[k] == nums[--k]);
+                } else if (sum < target) {
+                    while (j < k && nums[j] == nums[++j]);
+                } else if (sum == target && nums[j] != nums[k]){
+                    int left = 1;
+                    int right = 1;
+                    
+                    while (j < k && nums[k] == nums[k - 1]) {
+                        --k;
+                        ++right;
+                    }
+                    while (j < k && nums[j] == nums[j + 1]) {
+                        ++j;
+                        ++left;
+                    }
+                    ++j;
+                    --k;
+                    
+                    res += left * right;
+                    res %= mod;
+                } else {
+                    int len = k - j + 1;
+                    res += len * (len - 1) / 2;
+                    res %= mod;
+                    break;
+                }
+            }
+        }
+        return res % mod;
+    }
+};
+*/
+
+// 利用缓存 空间换时间
+class Solution {
+public:
+    int threeSumMulti(vector<int>& nums, int target) {
+        int mod = 1000000007;
+        unordered_map<int, int> freq;
+        for (int i : nums) {
+            ++freq[i];
+        }
+        
+        vector<int> uniq_num;
+        for (pair<const int, int> it : freq) {
+            uniq_num.push_back(it.first);
+        }
+        sort(uniq_num.begin(), uniq_num.end());
+        
+        int size = uniq_num.size();
+        long res = 0;
+        
+        for (int i = 0; i < size; ++i) {
+            int num_i = freq[uniq_num[i]];
+            if (uniq_num[i] * 3 == target && num_i >= 3) {
+                res += 1L * num_i * (num_i - 1) * (num_i - 2) / 6;
+            }
+            
+            for (int j = i + 1; j < size; ++j) {
+                int num_j = freq[uniq_num[j]];
+                
+                if (uniq_num[i] * 2 + uniq_num[j] == target && num_i > 1) {
+                    res += 1L * num_i * (num_i - 1) / 2 * num_j;
+                }
+                
+                if (uniq_num[i] + uniq_num[j] * 2 == target && num_j > 0) {
+                    res += 1L * num_j * (num_j - 1) / 2 * num_i;
+                }
+                
+                int k = target - uniq_num[i] - uniq_num[j];
+                if (k > uniq_num[j] && freq[k] > 0) {
+                    res += 1L * num_i * num_j * freq[k];
+                }
+            }
+        }
+        return res % mod;
+    }
+};
+
+````
+
