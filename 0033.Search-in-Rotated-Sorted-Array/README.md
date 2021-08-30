@@ -103,8 +103,8 @@ public:
         
         int lo = 0;
         int hi = size - 1;
-        while (lo <= hi) {
-            int mid = lo + (hi - lo) / 2;
+        while (lo <= hi) {		// 这里取等号，通常是为了在循环中返回 mid，不取等号，一般返回跳出返回 lo 的值。
+            int mid = lo + (hi - lo) / 2;		// 另一种理解，这道题是判断数是否存在在数组中，用等号，不在返回 -1
             
             if (nums[mid] == target) {
                 return mid;

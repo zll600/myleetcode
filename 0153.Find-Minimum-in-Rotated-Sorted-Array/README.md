@@ -88,7 +88,7 @@ public:
     int findMin(vector<int>& nums) {
         int lo = 0;
         int hi = nums.size() - 1;   
-        
+        				// 另一个角度是，最小的数一定存在于数组中，因此一定会有解，跳出循环后不用再次判断 lo 是否有意义
         while (lo < hi) {   // 因为区间长度为 1 的时候退出，因为没有相等的条件可以判断出结果。
             if (nums[lo] < nums[hi]) { // 例如，[1,2,3,4]旋转后出现 [1, 2, 3, 4] 的特殊情况
                 return nums[lo];
