@@ -41,9 +41,79 @@ Output: []
 
 ## 解题思路
 
-
+* 这一题用 DFS 的方法解题。先找到当前节点距离目标节点的距离，如果在左子树中找到了 target，距离当前节点的距离 > 0，则还需要在它的右子树中查找剩下的距离。如果是在右子树中找到了 target，反之同理。如果当前节点就是目标节点，那么就可以直接记录这个点。否则每次遍历一个点，距离都减一。
+* 这一题可以用 DFS 的方法来解决。先找到当前节点距离目标节点的距离，如果在左子树中找到了 target，距离当前节点的距离 > 0，则还需要在它的右子树中查找剩下的距离。如果在右子树中找到来 target ，则还需要在 它的左子树中查找剩下的距离。如果当前节点就是目标节点，就可以直接记录这个节点，否则没遍历一步，距离就减一。
+* 这道题目可以用 DFS 来解决，与目标节点的距离为 k ，也就是说从需要满足从当前节点到目标节点需要走 k 步，如果在当前节点向左子树中走，没走一步 k 减一，如果到达目标节点 k > 0 ，则说明应该从当前节点的右子树中开始出发，先消耗多余的步数，反之同理，
+* 如果当前节点就是目标节点，则应遍历当前节点的左右子树来直接消耗 k 步，这时就是相当于在以目标节点为根节点的书中找到与目标节点相距 k 的节点
 
 ## 代码
+
+````c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        FindDistanceK(root, target, k);
+        return res;
+    }
+    
+ private:
+    vector<int> res;
+    
+    int FindDistanceK(TreeNode *root, TreeNode *target, int k) {
+        if (root == nullptr) {
+            return -1;
+        }
+        
+        if (root == target) {
+            FindChild(root, k);
+            return k - 1;
+        }
+        
+        // 在当前节点的左子树中找 target，返回还需要消耗的步数
+        int left_dist = FindDistanceK(root->left, target, k);   
+        if (left_dist == 0) {   // 不需要多走了，直接加入
+            res.push_back(root->val);
+        }
+        if (left_dist > 0) {    // 还右剩余步数，进当前节点的右子树进行查找
+            FindChild(root->right, left_dist - 1);
+            return left_dist - 1;
+        }
+        
+        int right_dist = FindDistanceK(root->right, target, k);
+        if (right_dist == 0) {  // 步数消耗完毕，直接加入
+            res.push_back(root->val);
+        }
+        if (right_dist > 0) {   // 还需要在左子树中查找一部分，
+            FindChild(root->left, right_dist - 1);
+            return right_dist - 1;
+        }
+        
+        return -1;
+    }
+    
+    void FindChild(TreeNode *root, int k) { // 消耗完剩余的步数
+        if (root == nullptr) {
+            return;
+        }
+        
+        if (k == 0) {
+            res.push_back(root->val);
+        } else {
+            FindChild(root->left, k - 1);
+            FindChild(root->right, k - 1);
+        }
+    }
+};
+````
 
 
 
