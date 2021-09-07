@@ -1,8 +1,8 @@
 # [46. Permutations](https://leetcode.com/problems/permutations/)
 
-Given an array `nums` of distinct integers, return *all the possible permutations*. You can return the answer in **any order**.
+## 题目
 
- 
+Given an array `nums` of distinct integers, return *all the possible permutations*. You can return the answer in **any order**.
 
 **Example 1:**
 
@@ -32,3 +32,50 @@ Output: [[1]]
 - `1 <= nums.length <= 6`
 - `-10 <= nums[i] <= 10`
 - All the integers of `nums` are **unique**.
+
+## 题目大意
+
+给定一组整数，返回所有可能的全排列。
+
+## 解题思路
+
+这是一道排列的题目，可以使用回溯法来解决，排列的题目使用used数组来进行判断是否已经选择过，
+
+## 代码
+
+````c++
+class Solution {
+public:
+    
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<bool> used(nums.size(), false);
+        Backtracking(nums, used);
+        return res;
+    }
+    
+ private:
+    vector<vector<int>> res;
+    vector<int> path;
+    
+    void Backtracking(const vector<int>& nums, vector<bool>& used) {
+        if (path.size() == nums.size()) {
+            res.push_back(path);
+            return;
+        }
+        
+        int size = nums.size();
+        for (int i = 0; i < size; ++i) {
+            if (used[i] == true) {
+                continue;
+            }
+            
+            path.push_back(nums[i]);
+            used[i] = true;
+            Backtracking(nums, used);
+            path.pop_back();
+            used[i] = false;
+        }
+    }
+};
+````
+
