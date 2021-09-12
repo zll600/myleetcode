@@ -45,3 +45,56 @@ Output: 1
 - `1 <= coins[i] <= 5000`
 - All the values of `coins` are **unique**.
 - `0 <= amount <= 5000`
+
+## 题目大意
+
+给定一个代表不同面值硬币的整数数组 coins，和一个总数amount，求组成 amount 的最大方案数，你可以假定每种硬币有无数个
+
+## 解题思路
+
+* 这是一道 DP 完全背包的问题，
+* 状态的定义：`dp[i][j]`表示只考虑前 i 件物品，凑成总和为 j 的方案数目，
+* 初始化：为了方便初始化，这里让 `dp[0][x]`，不代表任何物品的情况，初始条件为 `dp[0][0] = 1`,任何硬币都不使用你个，也是一种情况，`dp[0][x] = 0`。
+* 递推方程：
+  * 不选当前硬币：`dp[i][j] = dp[i - 1][j]`
+  * 选当前硬币;这里需要对所有符合条件的情况进行求和
+
+## 代码
+
+`````c++
+class Solution {
+public:
+	// 二维朴素
+    int change1(int amount, vector<int>& coins) {
+        int size = coins.size();
+        vector<vector<int>> dp(size + 1, vector<int>(amount + 1, 0));
+        dp[0][0] = 1;
+        
+        for (int i = 1; i <= size; ++i) {
+            for (int j = 0; j <= amount; ++j) {
+                dp[i][j] = dp[i - 1][j];
+                
+                for (int k = 1; k * coins[i - 1] <= j; ++k) {
+                    dp[i][j] += dp[i - 1][j - k * coins[i - 1]];
+                }
+            }
+        }
+        
+        return dp[size][amount];
+    }
+    // 一维优化
+    int change(int amount, vector<int>& coins) {
+        int size = coins.size();
+        vector<int> dp(amount + 1, 0);
+        dp[0] = 1;
+        
+        for (int i = 1; i <= size; ++i) {
+            for (int j = coins[i - 1]; j <= amount; ++j) {
+                dp[j] += dp[j - coins[i - 1]];
+            }
+        }
+        return dp[amount];
+    }
+};
+`````
+

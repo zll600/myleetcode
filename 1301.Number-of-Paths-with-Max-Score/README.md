@@ -59,3 +59,111 @@ Output: [0,0]
 
 ## 代码
 
+`````c++
+class Solution {
+public:
+    vector<int> pathsWithMaxScore(vector<string>& board) {
+        n = board.size();
+        vector<vector<char>> matrix;
+        ToMatrix(board, matrix);
+
+        // 求得最大的分数
+        vector<int> sum(n * n, 0);
+        // 求路径数
+        vector<int> path(n * n, 0);
+
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                int idx = GetIdx(i, j);
+
+
+                // 初始化
+                // path[idx] = 1，到达起点的只有一条路径
+                // sum[idx] = 0，起点的整数之和为
+                if (i == n - 1 && j == n - 1) {
+                    path[idx] = 1;
+                    continue;
+                }
+
+                // 遇到障碍点
+                // sum[idx] = INT_MIN，障碍点不可访问，得分为无效值，
+                // path[idx] = 0，障碍点不可访问，路径数为 0，
+                if (matrix[i][j] == 'X') {
+                    sum[idx] = INT_MIN;
+                    continue;
+                }
+
+                // 如果是第一个格子，得分为0，否则计算得分
+                int val = (i == 0 && j == 0) ? 0 : matrix[i][j] - '0';
+
+                // 当前位置的最大得分，和到达当前位置的路径数
+                int score = INT_MIN;    // 无效值
+                int route = 0;
+                
+                // 如果下面合法，向下转移
+                if (i + 1 < n) {
+                    int cur = sum[GetIdx(i + 1, j)] + val;
+                    int cnt = path[GetIdx(i + 1, j)];
+                    update(cur, cnt, &score, &route);
+                }
+                
+                // 如果右面合法，向左转移
+                if (j + 1 < n) {
+                    int cur = sum[GetIdx(i, j + 1)] + val;
+                    int cnt = path[GetIdx(i, j + 1)];
+                    update(cur, cnt, &score, &route);
+                }
+                
+                // 如果右下合法，向右下转移
+                if (i + 1 < n && j + 1 < n) {
+                    int cur = sum[GetIdx(i + 1, j + 1)] + val;
+                    int cnt = path[GetIdx(i + 1, j + 1)];
+                    update(cur, cnt, &score, &route);
+                }
+
+                sum[idx] = score < 0 ? INT_MIN : score;
+                path[idx] = route;
+            }
+        }
+
+        return vector<int>{sum[GetIdx(0, 0)] == INT_MIN ? 0 : sum[GetIdx(0, 0)],
+                        sum[GetIdx(0, 0)] == INT_MIN ? 0 : path[GetIdx(0, 0)]};  
+    }
+
+ private:
+    static const int mod = 1000000007;
+    int n;
+
+
+    void ToMatrix(const vector<string>& board, vector<vector<char>>& matrix) {
+        for (const string& str : board) {
+            vector<char> tmp;
+            for (char c : str) {
+                tmp.push_back(c);
+            }
+            matrix.push_back(tmp);
+        }
+    }
+
+    int GetIdx(int x, int y) {
+        return x * n + y;
+    }
+
+    pair<int, int> ParseIdx(int idx) {
+        return pair<int, int>(idx / n, idx % n);
+    }
+    
+    // 更新值
+    void update(int cur, int cnt, int *score, int *route) {
+        // 如果当前值大于 score，更新score，
+        if (cur > *score) {
+            *score = cur;
+            *route = cnt;
+        } else if (cur == *score && cur != INT_MIN) {   // 如果当前值等于 score，只更新路径，
+            *route += cnt;
+        }
+        *route %= mod;
+    }
+};
+`````
+
