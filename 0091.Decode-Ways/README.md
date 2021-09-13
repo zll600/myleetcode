@@ -76,3 +76,78 @@ Explanation: "06" cannot be mapped to "F" because of the leading zero ("6" is di
 'Z' -> "26"
 ````
 
+返回解码一个字符串的方法数
+
+## 解题思路
+
+* 这是一道 线性 DP 问题，对于字符串的某个位置而言，我们只关心 i 位置的字符能否独立解码，和 i 位置的字符能否和i - 1 位置的字符一起解码，而不用关心 i - 1之前的位置
+* 状态定义：`dp[i]`表示考虑前  i  个字符的解码方案数，
+* 状态转移：
+  * 只能有 i 位置字符单独解码，转移的前提是 i 位置字符的范围为 [1, 9]，`dp[i] = dp[i - 1]`
+  * 只能由位置 i 的前一个位置 I - 1 共同作为一个单位进行解码，转移的前提是这个单位的范围是 [10, 26] `dp[i] = dp[i - 1]`
+  * 位置 i 既能独立解码也可以和前一个数字作为一个单位进行解码，`dp[i] = dp[i - 1] + dp[i - 2]`
+* 初始化：这里依旧采用空一格来避免分类讨论，并且使状态可以转移
+
+## 代码
+
+````c++
+class Solution {
+public:
+    int numDecodings1(string s) {
+        int len = s.size();
+        vector<int> dp(len + 1, 0);
+        dp[0] = 1;
+        
+        for (int i = 1; i <= len; ++i) {
+            int cur = s[i - 1] - '0';
+            int prev = i - 2 >= 0 ? s[i - 2] - '0' : INT_MIN;
+            
+            // 当前位置可以独立进行状态转移
+            if (cur >= 1 && cur <= 9) {
+                dp[i] = dp[i - 1];
+            }
+            
+            // 当前位置可以与前一个位置一起进行状态转移
+            if (prev != INT_MIN) {
+                int item = prev * 10 + cur;
+                if (item >= 10 && item <= 26) {
+                    dp[i] += dp[i - 2];
+                }
+            }
+        }
+        
+        return dp[len];
+    }
+    
+    // 空间优化，状态转移之涉及 i, i - 1, i - 2
+    // 用有限的变量来进行状态转移
+    int numDecodings(string s) {
+        int len = s.size();
+        
+        int first =  1;
+        int second = 0;
+        
+        for (int i = 0; i < len; ++i) {
+            int cur = s[i] - '0';
+            int prev = i - 1 >= 0 ? s[i - 1] - '0' : INT_MIN;
+            
+            int tmp = 0;
+            if (cur >= 1 && cur <= 9) {
+                tmp = first;
+            }
+            
+            if (prev != INT_MIN) {
+                int item = prev * 10 + cur;
+                if (item >= 10 && item <= 26) {
+                    tmp += second;
+                }
+            }
+            second = first;
+            first = tmp;
+        }
+        
+        return first;
+    }
+};
+````
+
