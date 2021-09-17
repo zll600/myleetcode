@@ -144,3 +144,124 @@ public:
 };
 `````
 
+## 解题思路
+
+* 这道题目也可以用并查集来做，我们先将边上的所有 ‘O’相连，然后我们在遍历所有位置，凡是可以与边上的‘O’，相连的 ‘O’，都不会被包围，最后将没有连通的 ‘O’ 改为‘X’
+
+## 代码
+
+````c++
+class UF {
+ public:
+    UF(int n) {
+        parent_.resize(n);
+        for (int i = 0; i < n; ++i) {
+            parent_[i] = i;
+        }
+    }
+    
+    int Find(int p) {
+        while (p != parent_[p]) {
+            parent_[p] = parent_[parent_[p]];
+            p = parent_[p];
+        }
+        
+        return p;
+    }
+    
+    bool Connected(int p, int q) {
+        return Find(p) == Find(q);
+    }
+    
+    void Union(int p, int q) {
+        int proot = Find(p);
+        int qroot = Find(q);
+        
+        if (proot == qroot) {
+            return;
+        }
+        
+        parent_[proot] = qroot;
+    }
+    
+ private:
+    vector<int> parent_;
+    
+};
+
+
+class Solution {
+ public:
+    void solve(vector<vector<char>>& board) {
+        rows = board.size();
+        cols = board[0].size();
+        
+        int size = rows * cols;
+        UF uf(size + 1);
+        
+        // 第一行和最后一行
+        for (int j = 0; j < cols; ++j) {
+            if (board[0][j] == 'O') {
+                uf.Union(GetIdx(0, j), size);
+            }
+            if (board[rows - 1][j] == 'O') {
+                uf.Union(GetIdx(rows - 1, j), size);
+            }
+        }
+        
+        // 第一列和最后一列
+        for (int i = 0; i < rows; ++i) {
+            if (board[i][0] == 'O') {
+                uf.Union(GetIdx(i, 0), size);
+            }
+            if (board[i][cols - 1] == 'O') {
+                uf.Union(GetIdx(i, cols - 1), size);
+            }
+        }
+        
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                if (board[i][j] == 'O') {
+                    for (const vector<int>& dir : dirs) {
+                        int nx = i + dir[0];
+                        int ny = j + dir[1];
+                        
+                        if (IsValid(nx, ny) && board[nx][ny] == 'O') {
+                            uf.Union(GetIdx(nx, ny), GetIdx(i, j));
+                        }
+                    }
+                }
+            }
+        }
+        
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                if (board[i][j] == 'O') {
+                    if (!uf.Connected(GetIdx(i, j), size)) {
+                        board[i][j] = 'X';
+                    }
+                }
+            }
+        }
+    }
+    
+ private:
+    int rows;
+    int cols;
+    
+    vector<vector<int>> dirs = {
+        {1, 0},
+        {0, 1}
+    };
+    
+    bool IsValid(int x, int y) {
+        return x >= 0 && x < rows && y >= 0 && y < cols;
+    }
+    
+    int GetIdx(int x, int y) {
+        return x * cols + y;
+    }
+};
+
+````
+

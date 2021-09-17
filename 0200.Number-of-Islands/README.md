@@ -131,5 +131,97 @@ class Solution {
 };
 ````
 
+## 解题思路
 
+* 这道题可以看作是求连通分量的个数，因此可以用并查集来解决，
+* 这道题目由两个部分，我们计算所有的连通分量的数目，并将所有的 0 连通，形成一个连通分量，在创建 并查集的时候，额外创建了一个节点，如果可以使用这个节点来将所有的 0，连通，
+* 这里先借用以下别人的代码，以后会再次修改
+
+## 代码
+
+````c++
+public class Solution {
+
+    public int numIslands(char[][] grid) {
+        int rows = grid.length;
+        if (rows == 0) {
+            return 0;
+        }
+        int cols = grid[0].length;
+        if (cols == 0) {
+            return 0;
+        }
+
+        int[][] directions = new int[][]{{0, 1}, {1, 0}};
+        int size = rows * cols;
+        // 多开一个结点，把 '0' 都与最后这个结点连在一起
+        UnionFind unionFind = new UnionFind(size + 1);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == '1') {
+                    for (int[] direction : directions) {
+                        int newX = i + direction[0];
+                        int newY = j + direction[1];
+                        if (inArea(newX, newY, rows, cols) && grid[newX][newY] == '1') {
+                            unionFind.union(getIndex(i, j, cols), getIndex(newX, newY, cols));
+                        }
+                    }
+                } else {
+                    unionFind.union(getIndex(i, j, cols), size);
+                }
+            }
+        }
+        return unionFind.getCount() - 1;
+    }
+
+
+    private class UnionFind {
+
+        private int[] parent;
+        /**
+         * 连通分量个数
+         */
+        private int count;
+
+        public UnionFind(int n) {
+            count = n;
+            parent = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public int find(int x) {
+            while (x != parent[x]) {
+                // 只实现了路径压缩，并且是隔代压缩
+                parent[x] = parent[parent[x]];
+                x = parent[x];
+            }
+            return x;
+        }
+
+        public void union(int x, int y) {
+            int rootX = find(x);
+            int rootY = find(y);
+            if (rootX == rootY) {
+                return;
+            }
+            parent[rootX] = rootY;
+            count--;
+        }
+
+        public int getCount() {
+            return count;
+        }
+    }
+
+    private boolean inArea(int x, int y, int rows, int cols) {
+        return x >= 0 && x < rows && y >= 0 && y < cols;
+    }
+
+    private int getIndex(int x, int y, int cols) {
+        return x * cols + y;
+    }
+}
+````
 
