@@ -43,7 +43,48 @@ Output: false
 
 这道题目是一道贪心的题目，如果当前位置可以种植一朵花就种一朵，
 
+* 如果是数组的边界，只需要判断其前面或者后面是不是1
+* 如果不是数组边界，则需要判断其前面和后面
 
+这里贴上两篇题解：https://leetcode-cn.com/problems/can-place-flowers/solution/chong-hua-wen-ti-tan-xin-dang-qian-wei-z-959y/
+
+https://leetcode-cn.com/problems/can-place-flowers/solution/fei-chang-jian-dan-de-tiao-ge-zi-jie-fa-nhzwc/
 
 ## 代码
+
+`````c++
+class Solution {
+public:
+    // 跳格子，不改变原数组
+    bool canPlaceFlowers1(vector<int>& flowerbed, int n) {
+        int i = 0;
+        while (i < flowerbed.size() && n > 0) {
+            if (flowerbed[i] == 1) {
+                i += 2; // 当前已经种了，那么下一个位置肯定不能种，一次性跳两格
+            } else if (i == flowerbed.size() - 1 || flowerbed[i + 1] == 0) {
+                --n;    // 当前不是 0，且前一个必定是0，应为遇到 1 是跳两步的
+                i += 2; // 如果当前是最后一位置，或者下一个位置是 0，就可以种，种完跳两格
+            } else {
+                i += 3; // 如果不是 1，而且下一个位置是1，则直接一次性跳3 格
+            }
+        }
+        
+        return n <= 0;
+    }
+    
+    // 需要改变原数组，也可以复制一下原数组
+    bool canPlaceFlowers(vector<int>& flowerbed, int n) {
+        for (int i = 0; i < flowerbed.size(); ++i) {
+            if (flowerbed[i] == 0
+                && (i == 0 || flowerbed[i - 1] == 0)    // 如果不是第一个要考虑前一个
+                && (i == flowerbed.size() - 1 || flowerbed[i + 1] == 0)) { // 如果不是最后一个，就要考虑下一个
+                flowerbed[i] = 1;
+                --n;
+            }
+        }
+        
+        return n <= 0;
+    }
+};
+`````
 
