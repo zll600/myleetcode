@@ -162,3 +162,246 @@ public:
 };
 `````
 
+### 快速排序（基本）
+
+`````c++
+class Solution {
+ public:
+    // 基本快速排序
+    vector<int> sortArray(vector<int>& nums) {
+        QuickSort(nums, 0, nums.size() - 1);
+        return nums;
+    }
+    
+ private:
+    static const int kInsertionSort = 7;
+    
+    void InsertionSort(vector<int>& nums, int lo, int hi) {
+        for (int i = lo + 1; i <= hi; ++i) {
+            int tmp = nums[i];
+            int j = i;
+            while (j > lo && nums[j - 1] > tmp) {
+                nums[j] = nums[j - 1];
+            }
+            nums[j] = tmp;
+        }
+    }
+    
+    int Partition(vector<int>& nums, int lo, int hi) {
+        int pivot_idx = rand() % (hi - lo + 1) + lo;
+        swap(nums[lo], nums[pivot_idx]);
+        
+        // 基准值
+        int pivot = nums[lo];
+        int lt = lo;
+        
+        // 循环不变量
+        // all in [lo + 1, lt] < pivot
+        // all in [lt + 1, i) >= pivot
+        for (int i = lo + 1; i <= hi; ++i) {
+            if (nums[i] < pivot) {
+                lt++;
+                swap(nums[i], nums[lt]);
+            }
+        }
+        swap(nums[lo], nums[lt]);
+        
+        return lt;
+    }
+    
+    void QuickSort(vector<int>& nums, int lo, int hi) {
+        if (hi - lo <= kInsertionSort) {
+            InsertionSort(nums, lo, hi);
+            return;
+        }
+        
+        int pivot_idx = Partition(nums, lo, hi);
+        QuickSort(nums, lo, pivot_idx - 1);
+        QuickSort(nums, pivot_idx + 1, hi);
+    }
+    
+};
+`````
+
+### 快速排序（双指针）
+
+``````c++
+class Solution {
+ public:
+    vector<int> sortArray(vector<int>& nums) {
+        QuickSort(nums, 0, nums.size() - 1);
+        return nums;
+    }
+
+ private:
+    static const int kInsertionThreshold = 7;
+
+    void InsertionSort(vector<int>& nums, int lo, int hi) {
+        for (int i = lo + 1; i <= hi; ++i) {
+            int tmp = nums[i];
+            int j = i;
+            while (j > 0 && nums[j - 1] > tmp) {
+                nums[j] = nums[j - 1];
+            }
+            nums[j] = tmp;
+        }
+    }
+
+    int Partition(vector<int>& nums, int lo, int hi) {
+        int pivot_idx = rand() % (hi - lo + 1) + lo;
+        swap(nums[lo], nums[pivot_idx]);
+
+        int pivot = nums[lo];
+        int lt = lo + 1;
+        int gt = hi;
+
+        // all in [lo + 1, lt) <= pivot
+        // all in (gt, hi] >= pivot
+        while (true) {
+            while (lt < hi && nums[lt] < pivot) {
+                ++lt;
+            }
+            while (gt > lo && nums[gt] > pivot) {
+                gt--;
+            }
+
+            if (lt >= gt) {
+                break;
+            }
+
+            // 细节：相等的元素通过交换，等概率分到数组的两边
+            swap(nums[lt], nums[gt]);
+            gt--;
+            lt++;
+        }
+        swap(nums[lo], nums[gt]);
+
+        return gt;
+    }
+
+    void QuickSort(vector<int>& nums, int lo, int hi) {
+        if (hi - lo <= kInsertionThreshold) {
+            InsertionSort(nums, lo, hi);
+            return;
+        }
+
+        int p_idx = Partition(nums, lo, hi);
+        QuickSort(nums, lo, p_idx - 1);
+        QuickSort(nums, p_idx + 1, hi);
+    }
+};
+``````
+
+### 快速排序（三指针）
+
+`````c++
+class Solution {
+ public:
+    vector<int> sortArray(vector<int>& nums) {
+        QuickSort(nums, 0, nums.size() - 1);
+        return nums;
+    }
+
+ private:
+    static const int kInsertionThreshold = 7;
+
+    void InsertionSort(vector<int>& nums, int lo, int hi) {
+        for (int i = lo + 1; i <= hi; ++i) {
+            int tmp = nums[i];
+            int j = i;
+            while (j > 0 && nums[j - 1] > tmp) {
+                nums[j] = nums[j - 1];
+            }
+            nums[j] = tmp;
+        }
+    }
+
+    void QuickSort(vector<int>& nums, int lo, int hi) {
+        if (hi - lo <= kInsertionThreshold) {
+            InsertionSort(nums, lo, hi);
+            return;
+        }
+        
+        int pivot_idx = rand() % (hi - lo + 1) + lo;
+        swap(nums[lo], nums[pivot_idx]);
+        
+        // 循环不变量
+        // all in [lo + 1, lt] < pivot
+        // all in [lt + 1, i) == pivot
+        // all in [gt, hi] > pivot
+        int pivot = nums[lo];
+        int lt = lo;
+        int gt = hi + 1;
+        int i = lo + 1;
+        
+        while (i < gt) {
+            if (nums[i] < pivot) {
+                lt++;
+                swap(nums[i], nums[lt]);
+                i++;
+            } else if (nums[i] == pivot) {
+                i++;
+            } else {
+                gt--;
+                swap(nums[i], nums[gt]);
+            }
+        }
+        swap(nums[lo], nums[lt]);
+                
+        // 注意这里，大大减少了两侧分治的区间
+        QuickSort(nums, lo, lt - 1);
+        QuickSort(nums, gt, hi);
+    }
+};
+`````
+
+###  堆排
+
+``````c++
+class Solution {
+ public:
+    vector<int> sortArray(vector<int>& nums) {
+        // 将数组整理成堆
+        Heapify(nums);
+        
+        // 循环不变量 [0, i] 有序
+        int i = nums.size() - 1;
+        while (i >= 1) {
+            // 将堆顶元素（当前最大）交换到数组末尾
+            swap(nums[0], nums[i]);
+            --i;    // 逐步减少堆有序的部分
+            SiftDown(nums, 0, i);   // 下沉操作，保证 [0, i] 有序
+        }
+        return nums;
+    }
+
+ private:
+    // 下沉操作
+    void SiftDown(vector<int>& nums, int k, int end) {
+        while (2 * k + 1 <= end) {  // 注意这里是等于
+            int j = 2 * k + 1;
+            if (j + 1 <= end && nums[j] < nums[j + 1]) {
+                j++;
+            }
+            
+            if (nums[j] > nums[k]) {
+                swap(nums[j], nums[k]);
+            } else {
+               break;   // 这里已经有序 
+            }
+            
+            k = j;
+        }
+    }
+    
+    void Heapify(vector<int>& nums) {
+        int len = nums.size();
+        // 这里是取中间元素的下标而不是 第几个，所以 len -1
+        for (int i = (len - 1) / 2; i >= 0; i--) {
+            SiftDown(nums, i, len - 1);
+        }
+    }
+
+};
+``````
+
