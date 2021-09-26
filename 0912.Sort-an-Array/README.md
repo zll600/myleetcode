@@ -401,7 +401,225 @@ class Solution {
             SiftDown(nums, i, len - 1);
         }
     }
-
 };
 ``````
 
+### 冒泡排序
+
+`````c++
+class Solution {
+ public:
+    vector<int> sortArray(vector<int>& nums) {
+        for (int i = nums.size() - 1; i >= 1; i--) {
+            // 这里先默认数组是有序的，只要发生一次交换，就说明还需要至少再来一轮
+            // 如果内层循环没有发生一次交换，就说明数组已经有序，可以直接退出
+            bool sorted = true;
+            for (int j = 0; j < i; j++) {
+                if (nums[j] > nums[j + 1]) {
+                    swap(nums[j], nums[j + 1]);
+                    sorted = false;
+                }
+            }
+            if (sorted) {
+                break;
+            }
+        }
+        
+        return nums;
+    }
+};
+`````
+
+### 计数排序（了解）
+
+`````c++
+class Solution {
+ public:
+    vector<int> sortArray(vector<int>& nums) {
+        // 这里加上一个偏移使得输入的值可以作为数组下标
+        int offset = 50000;
+        int size = 100000;
+        
+        vector<int> count(size + 1, 0); // 计数数组
+        for (int num : nums) {  // 计算计数数组
+            count[num + offset]++;
+        }
+        
+        for (int i = 1; i < size; i++) {  // 将 count 变为前缀和数组，
+            count[i] += count[i - 1];
+        }
+        
+        vector<int> tmp(nums.begin(), nums.end());
+        
+        // 这里是为了保证稳定性，从后往前赋值，
+        for (int i = nums.size() - 1; i >= 0; i--) {
+            int idx = count[tmp[i] + offset] - 1;
+            nums[idx] = tmp[i];
+            count[tmp[i] + offset]--;
+        }
+        
+        return nums;
+    }
+};
+`````
+
+### 基数排序 (了解)
+
+`````c++
+class Solution {
+public:
+    // 基数排序：低位优先
+    vector<int> sortArray(vector<int>& nums) {
+        int len = nums.size();
+        
+        // 预处理，让所有的数都大于等于 0，这样才可以使用基数排序
+        for (int i = 0; i < len; i++) {
+            nums[i] += kOffset;
+        }
+        
+        // 1、找出最大的数字
+        int max_val = nums[0];
+        for (int num : nums) {
+            max_val = max(max_val, num);
+        }
+        
+        // 2、计算出最大的数字有几位
+        int max_len = GetMaxLen(max_val);
+        
+        // 计数排序需要使用的计数数组和临时数组
+        vector<int> count(10);
+        vector<int> tmp(len);
+        
+        // 表征关键字的量：除数
+        // 1 表示按照个位关键字排序
+        // 10 表示按照十位关键字排序
+        // 1000 表示按照百位关键字排序
+        // 10000 表示按照千位关键字排序
+        int divisor = 1;
+        // 有几位数，外层就需要进行几次排序
+        for (int i = 0; i < max_len; i++) {
+            // 每一步都使用计数排序，保证排序结果是稳定的
+            // 这一步需要额外空间保存结果集，因把结果 tmp zhong
+            CountingSort(nums, tmp, divisor, len, count);
+            
+            // 交换 nums 和 tmp 的引用，下一轮还是按照 nums 进行排序
+            swap(nums, tmp);
+            
+            // divisor 自增，表示采用低位优先的基数排序
+            divisor *= 10;
+        }
+        
+        vector<int> res(len);
+        for (int i = 0; i < len; i++) {
+            res[i] = nums[i] - kOffset;
+        }
+        return res;
+    }
+    
+ private:
+    static const int kOffset = 50000;
+    
+    // 求数的位数
+    int GetMaxLen(int num) {
+        int len = 0;
+        while (num > 0) {
+            num /= 10;
+            len++;
+        }
+        return len;
+    }
+    
+    void CountingSort(vector<int>& nums, vector<int>& res,
+                      int divisor, int len, vector<int>& count) {
+        // 1、计算计数数组
+        for (int i = 0; i < len; i++) {
+            int remainder = (nums[i] / divisor) % 10;
+            count[remainder]++;
+        }
+        
+        // 2、变成前缀和数组
+        for (int i = 1; i < 10; i++) {
+            count[i] += count[i - 1];
+        }
+        
+        // 3、从后向前赋值
+        for (int i = len - 1; i >= 0; i--) {
+            int remainder = (nums[i] / divisor) % 10;
+            int idx = count[remainder] - 1;
+            res[idx] = nums[i];
+            count[remainder]--;
+        }
+        
+        // fill(count.begin(), count.end(), 0);
+        count.assign(10, 0);
+    }
+};
+`````
+
+### 桶排序（了解）
+
+````c++
+class Solution {
+public:
+    
+    vector<int> sortArray(vector<int>& nums) {
+        int len = nums.size();
+        
+        // 1、将数据转化为 [0, 100000] 区间里的数
+        for (int i = 0; i < len; i++) {
+            nums[i] += kOffset;
+        }
+        
+        // 2、观察数据，设置桶的个数
+        // 步长
+        int step = 10000;
+        // 桶的个数
+        int bucket_num = 100000 / step;
+        
+        // 桶
+        vector<vector<int>> buckets(bucket_num + 1, vector<int>(len));
+        // 每个桶中元素的个数
+        vector<int> next(bucket_num + 1);
+        
+        // 分桶
+        for (int num : nums) {
+            int bucket_idx = num / step;
+            buckets[bucket_idx][next[bucket_idx]] = num;
+            next[bucket_idx]++;
+        }
+        
+        for (int i = 0; i < bucket_num + 1; i++) {
+            InsertionSort(buckets[i], next[i] - 1); // 这里减一不要忘记
+        }
+        
+        vector<int> res(len);
+        int idx = 0;
+        for (int i = 0; i < bucket_num + 1; i++) {
+            int cur_len = next[i];
+            for (int j = 0; j < cur_len; j++) {
+                res[idx] = buckets[i][j] - kOffset;
+                idx++;
+            }
+        }
+        
+        return res;
+    }
+    
+ private:
+    static const int kOffset = 50000;
+    
+    // 注意这里要求提供一个左闭右闭的输入
+    void InsertionSort(vector<int>& arr, int end) {
+        for (int i = 1; i <= end; i++) {
+            int tmp = arr[i];
+            int j = i;
+            while (j > 0 && arr[j - 1] > tmp) {
+                arr[j] = arr[j - 1];
+            }
+            arr[j] = tmp;
+        }
+    }
+};
+````
+
+ 
