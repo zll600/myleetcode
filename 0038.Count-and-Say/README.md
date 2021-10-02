@@ -52,3 +52,45 @@ Count and Say 序列是一个通过按照递归形式定的序列：
 
 要 **描述** 一个数字字符串，首先要将字符串分割为 **最小** 数量的组，每个组都由连续的最多 **相同字符** 组成。然后对于每个组，先描述字符的数量，然后描述字符，形成一个描述组。要将描述转换为数字字符串，先将每组中的字符数量用数字替换，再将所有描述组连接起来。
 
+## 解题思路
+
+### 解法1（递归）
+
+这个解法可以参考这篇题解：https://leetcode-cn.com/problems/count-and-say/solution/1msdi-gui-fa-jian-dan-hao-li-jie-by-stru-nv96/
+
+这道题的题目已经说明，这个式子是按照递归定义的，所以我们我可以利用递归的办法来求解，这里可以在计算同一字符连续出现的次数时采用双指针法，这里标出了循环不变量的定义
+
+```c++
+class Solution {
+public:
+    string countAndSay(int n) {
+        if (n == 1) {  // 递归的终止条件
+            return "1";
+        }
+        
+        string str = countAndSay(n - 1);
+        
+        string res = "";
+        
+        // 循环不变量 [i, j) 表示的是同一种字符
+        int i = 0;
+        int j = 1;
+        while (j < str.size()) {
+            if (str[i] != str[j]) {
+                res += to_string(j - i);
+                res.push_back(str[i]);
+                i = j;
+            }
+            j++;
+        }
+        // 此时最后一种字符还没有计算进入
+        res += to_string(j - i);
+        res.push_back(str[i]);
+        
+        return res;
+    }
+};
+```
+
+
+
