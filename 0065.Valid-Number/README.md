@@ -98,3 +98,132 @@ Output: true
 
 ## 解题思路
 
+这道题目就是一道字符串模拟的题目，不过条件有点多，难就难在如何设计好分支判断
+
+### 解法1（模拟）
+
+可以利用e/E 来分割数字，e 之前可以是小数也可以是整数， E 之后只能是整数，
+
+* 对于整数而言，至少存在一个数字，如果有符号，第一位是符号位
+* 对于小数而言：
+  * 只能存在一个 '.'，除此之外只能出现数字
+  * 至少有一位数字
+  * 可能由符号位
+
+`````c++
+class Solution {
+public:
+    bool isNumber(string str) {
+        bool is_decimal = false;
+        // 查找字符串中是否有 分隔符
+        int spl = -1;
+        for (int i = 0; i < str.size(); i++) {
+            if (str[i] == '.') {  // '.' 必定出现在 'e'/'E'之前，所以可以检测出
+                is_decimal = true;
+            }
+            
+            if (str[i] == 'e' || str[i] == 'E') {
+                if (spl == -1) {
+                    spl = i;
+                } else {
+                    return false;
+                }
+            }
+        }
+        
+        bool res = true;
+        if (spl != -1) {
+            // 判断 e 之前的部分
+            if (is_decimal) {
+                res &= IsDecimal(str, 0, spl - 1);
+            } else {
+                res &= IsInteger(str, 0, spl - 1);
+            }
+            
+            // 判断之后的部分
+            res &= IsInteger(str, spl + 1, str.size() - 1);
+            
+            return res;
+        }
+        
+        return is_decimal ? IsDecimal(str, 0, str.size() - 1) : IsInteger(str, 0, str.size() - 1);
+    }
+    
+ private:
+    // 检查 [first, last] 区间的数是否为整数
+    bool IsInteger(const string& str, int first, int last) {
+        if (first > last) {
+            return false;
+        }
+        
+        // 判断符号位
+        if (str[first] == '+' || str[first] == '-') {
+            first++;
+        }
+        // 至少由一位数字
+        if (first > last) {
+            return false;
+        }
+        
+        while (first <= last) {
+            // 是否有不合发的字符
+            if (!isdigit(str[first])) {
+                return false;
+            }
+            first++;
+        }
+        
+        return true;
+    }
+    
+    // 检查 [first, last] 区间的数是否为小数
+    bool IsDecimal(const string& str, int first, int last) {
+        if (first > last) {  // 输入是否合法
+            return false;
+        }
+        
+        // 是否有符号位
+        if (str[first] == '+' || str[first] == '-') {
+            first++;
+        }
+        
+        bool dot = true;
+        bool before = false;
+        while (first <= last && str[first] != '.') {
+            if (isdigit(str[first])) {
+                before = true;
+            }
+            
+            // '.'之前只能出席数字
+            if (!isdigit(str[first])) {
+                return false;
+            }
+            
+            first++;
+        }
+        
+        // 没有 '.'
+        if (first > last) {
+            return false;
+        }
+        
+        first++;  // 跳过 '.'
+        bool after  = false;
+        while (first <= last) {
+           if (isdigit(str[first])) {
+                after = true;
+            }
+            
+            // '.'后面只能出现数字
+            if (!isdigit(str[first])) {
+                return false;
+            }
+            
+            first++;
+        }
+        
+        return before || after;
+    }
+};
+`````
+
