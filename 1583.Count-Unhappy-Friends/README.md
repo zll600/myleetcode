@@ -81,3 +81,83 @@ Output: 4
 
 ## 解题思路
 
+### 解法1（模拟（TLE））
+
+使用一个哈希套哈希的结构来存储数据，方便查询，
+
+将亲密度由大到小，转化为分数来保存，
+
+遍历每一组统计其中的不开心人数，
+
+``````c++
+class Solution {
+public:
+    int unhappyFriends(int n, vector<vector<int>>& preferences, vector<vector<int>>& pairs) {
+        int m = pairs.size();
+        for (int i = 0; i < n; i++) {
+            vector<int> tmp(preferences[i]);
+            // 对每一项使用一个哈希表示其对应的亲密度
+            unordered_map<int, int> cur;
+            for (int j = 0; j < n - 1; j++) {
+                cur.insert(make_pair(tmp[j], n - j));  // 这里将下标转化为亲密度
+            }
+            cache_.insert(make_pair(i, cur));
+        }
+        
+        int res = 0;
+        // 检查每一组，注意每个小朋友只能被被统计一次
+        for (int i = 0; i < m; i++) {
+            int x = pairs[i][0];
+            int y = pairs[i][1];
+            bool xok = false;
+            bool yok = false;
+            // 与其他组作比较
+            for (int j = 0; j < m; j++) {
+                if (i == j) {
+                    continue;
+                }
+                
+                int u = pairs[j][0];
+                int v = pairs[j][1];
+                if (!xok && Check(x, y, u, v)) {
+                    xok = true;
+                }
+                if (!yok && Check(y, x, u, v)) {
+                    yok = true;
+                }
+                if (xok && yok) {
+                    break;
+                }
+            }
+            if (xok) {
+                res++;
+            }
+            if (yok) {
+                res++;
+            }
+        }
+        return res;
+    }
+    
+ private:
+    // 使用哈希套哈希来作缓存
+    unordered_map<int, unordered_map<int, int>> cache_;
+    
+    bool Check(int x, int y, int u, int v) {
+        unordered_map<int, int> xmap = cache_.at(x);
+        unordered_map<int, int> ymap = cache_.at(y);
+        unordered_map<int, int> umap = cache_.at(u);
+        unordered_map<int, int> vmap = cache_.at(v);
+        
+        if (xmap.at(u) > xmap.at(y) && umap.at(x) > umap.at(v)) {
+            return true;
+        }
+        if (xmap.at(v) > xmap.at(y) && vmap.at(x) > vmap.at(u)) {
+            return true;
+        }
+        
+        return false;
+    }
+};
+``````
+
