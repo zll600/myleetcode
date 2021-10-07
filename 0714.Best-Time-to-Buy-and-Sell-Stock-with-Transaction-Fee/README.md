@@ -46,3 +46,78 @@ Output: 6
 
 注意：这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费
 
+## 解题思路
+
+这道题目和第 122 题相同，多了一个计算手续费的过程，这里我们规定在买入股票的时候计算手续费
+
+### 解法1
+
+* 状态定义：`dp[i][j]`表示 [0, i] 区间内，状态为j 时的利润，其中 j 的定义如下：
+  * 0 表示当前不持有股票
+  * 1 表示当前持有股票
+* 状态转移方程，参考代码
+* 初始化：`dp[0][0] = 0`表示第 0 天，不持有股票的情况，此时利润为0，`dp[0][1] = -prices[0] - fee`，表示第 0 天，持有股票，此时需要计算手续费
+
+````c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int size = prices.size();
+        if (size < 2) {
+            return 0;
+        }
+        
+        // 这里我们规定在卖出股票的时候计算手续费
+        vector<vector<int>> dp(size, vector<int>(2));
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0] - fee;
+        
+        for (int i = 1; i < size; i++) {
+            // 当前不持有股票
+            // 1、前一天不持有股票
+            // 2、前一天持有股票，卖出
+            dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            
+            // 当前持有股票
+            // 1、前一天不持有股票，今天买入，
+            // 2、前一天持有股票，
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i] - fee);
+        }
+        
+        return dp[size - 1][0];
+    }
+};
+````
+
+#### 优化
+
+这里利用有限变量，去掉了状态数组的第一个维度
+
+````c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int size = prices.size();
+        if (size < 2) {
+            return 0;
+        }
+        
+        vector<int> dp(2);
+        dp[0] = 0;
+        dp[1] = -prices[0] - fee;
+        
+        int pre_zero = dp[0];
+        int pre_one = dp[1];
+        for (int i = 1; i < size; i++) {
+            dp[0] = max(dp[0], pre_one + prices[i]);
+            dp[1] = max(dp[1], pre_zero - prices[i] - fee);
+            
+            pre_zero = dp[0];
+            pre_one = dp[1];
+        }
+        
+        return dp[0];
+    }
+};
+````
+
