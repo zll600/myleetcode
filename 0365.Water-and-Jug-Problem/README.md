@@ -60,7 +60,13 @@ Output: true
 
 ### 解法1（广搜）
 
+这种解法可以参考这两篇题解：https://leetcode-cn.com/problems/water-and-jug-problem/solution/tu-de-yan-du-you-xian-bian-li-by-liweiwei1419/
+
+https://leetcode-cn.com/problems/water-and-jug-problem/solution/tu-jie-bfs-c-jie-zhu-unordered_set-queue-shi-xian-/
+
 这道题目有一个需要注意的点，以 pair 做键的时候，需要自定义哈希函数，否则会编译报错
+
+因为状态有可能重复，这道题中最终形成的图是一个**有向有环**的图，所以需要一个记录是否访问过的结构
 
 **状态定义**：这道题目的状态涉及到了两个变量，A 中当前的水量，和 B 中当前的水量，
 
@@ -166,4 +172,44 @@ public:
 ### 解法2
 
 这种解法可以参考这篇题解：https://leetcode-cn.com/problems/water-and-jug-problem/solution/hu-dan-long-wei-liang-zhang-you-yi-si-de-tu-by-ant/
+
+这种解法，比较简单，对整体数量做讨论，而不是分为两个容器，但是理解上确实有难度，可以参考以下题解下面的评论
+
+`````c++
+bool canMeasureWater(int x, int y, int z) {
+        if (x + y < z) {
+            return false;
+        }
+        
+        unordered_set<int> visited;
+        queue<int> que;
+        que.push(0);
+        
+        while (!que.empty()) {
+            int cur = que.front();
+            que.pop();
+            
+            // pair<iterator,bool> insert (value_type& val);
+            // 如果插入成功，则 bool 为 true， iterator 指向新插入的位置
+            // 如果插入失败，则 bool 为 false，iterator 指向原来元素的位置
+            if (cur + x <= x + y && visited.insert(cur + x).second) {
+                que.push(cur + x);
+            }
+            if (cur + y <= x + y && visited.insert(cur + y).second) {
+                que.push(cur + y);
+            }
+            if (cur - x >= 0 && visited.insert(cur - x).second) {
+                que.push(cur - x);
+            }
+            if (cur - y >= 0 && visited.insert(cur - y).second) {
+                que.push(cur - y);
+            }
+            
+            if (visited.find(z) != visited.end()) {
+                return true;
+            }
+        }
+        return false;
+    }
+`````
 
