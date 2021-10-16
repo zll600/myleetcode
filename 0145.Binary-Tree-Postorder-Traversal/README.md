@@ -142,7 +142,7 @@ public:
 
 ### 解法3（迭代）
 
-利用双向队列
+利用双向队列，也可以使用一个将“中左右”改为 “右左中”，
 
 `````c++
 /**
@@ -187,6 +187,8 @@ class Solution {
 ### 解法4（迭代）
 
 这种解法的思路可以参考这篇题解：https://leetcode-cn.com/problems/binary-tree-postorder-traversal/solution/fei-di-gui-hou-xu-guan-jian-jie-ti-si-lu-cru8/
+
+使用一个栈，这里多用一个指针表示刚才遍历的位置，如果刚才遍历的是右子树，接下来应该遍历中间节点，否则转向右子树，且不能弹出当前栈顶
 
 `````c++
 /**

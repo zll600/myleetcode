@@ -198,3 +198,95 @@ class Solution {
 };
 ````
 
+### 解法3（先序遍历）
+
+`````c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+ public:
+    TreeNode* bstFromPreorder(vector<int>& preorder) {
+        // 求出数组中的最大元素，也就是最右侧的节点
+        auto it = max_element(preorder.begin(), preorder.end());
+        // 记录构建到第几个节点了
+        int index = 0;
+        return BSTFromPreorder(preorder, index, *it);
+    }
+    
+ private:
+    TreeNode* BSTFromPreorder(const vector<int>& preorder, int& index, int max_val) {
+        // 第二个判断条件不能省略，否则在递归的逻辑中不好处理左右子树的划分
+        if (index == preorder.size() || preorder[index] > max_val) {
+            return nullptr;
+        }
+        
+        // 取出数组的第一个元素构造中间节点
+        TreeNode *root = new TreeNode(preorder[index++]);
+        // 左侧节点不能大于 root->val 
+        root->left = BSTFromPreorder(preorder, index, root->val);
+        // 右侧节点不能 max_val
+        root->right = BSTFromPreorder(preorder, index, max_val);
+        
+        return root;
+    }
+};c
+`````
+
+### 解法4
+
+`````c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+ public:
+    TreeNode* bstFromPreorder(vector<int>& preorder) {
+        stack<TreeNode*> sta;
+        TreeNode *root = new TreeNode(preorder[0]);
+        sta.push(root);
+        
+        const int size = preorder.size();
+        for (int i = 1; i < size; ++i) {
+            TreeNode *node = new TreeNode(preorder[i]);
+            // 保存栈顶元素，后面元素可能是其左节点或者右节点
+            TreeNode *parent = sta.top();
+            
+            // 如果栈顶元素大于当前元素，
+            if (preorder[i] < parent->val) {
+                parent->left = node;  // 当前元素作为栈顶元素的左子树
+            } else {
+                // 如果栈顶元素小于当前元素，则一直出栈，直到栈空或者栈顶元素大于当前元素，
+                // 则当前节点就是上一个出栈节点的右子树
+                while (!sta.empty() && preorder[i] > sta.top()->val) {
+                    parent = sta.top();
+                    sta.pop();
+                }
+                parent->right = node;
+            }
+            
+            // 入栈
+            sta.push(node);
+        }
+        
+        return root;
+    }
+};
+`````
+

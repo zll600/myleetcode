@@ -65,3 +65,6 @@ Note that the solution remains the same since 5 and 6 are in the same location a
 ## 题目大意
 
 给定一个树节点计算计算树的垂序遍历，对于每一个节点(row, col)，左右节点分别是(row + 1，col - 1)，右节点是(row + 1, col + 1)，树的根节点是(0, 0)，二叉树的垂序遍历，从左到右按列索引每一列，形成一个从上到下的列表，如果在同行同列上有多个节点，从小到大排序，
+
+返回二叉树的垂序遍历
+
