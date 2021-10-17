@@ -84,6 +84,12 @@ public:
             return false;
         }
         
+        /*
+        if (!p || !q) {
+        	return false;
+        }
+        */
+        
         // 检验当前节点的值
         // 以及左子树和右子树
         return p->val == q->val && isSameTree(p->left, q->left)

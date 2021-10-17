@@ -68,3 +68,70 @@ Note that the solution remains the same since 5 and 6 are in the same location a
 
 返回二叉树的垂序遍历
 
+## 解题思路
+
+这道题目要求按列来求：列号从小到大，同列，行号从小到大，同列同行，按照值的大小从小到大
+
+Solution1: 
+
+这里的解法参考了这篇题解：https://zxi.mytechroad.com/blog/tree/leetcode-987-vertical-order-traversal-of-a-binary-tree/
+
+这篇题解的中的代码已经不能通过了，因为如果同行同列出现同样大小的值 set 只能保留一个，因此这里必须使用 multiset 来代替，
+
+这里的思路是，用一个映射表示位置和值之间的关系，又因为题目要求有序，所以这里利用了 map 和 multiset 的有序性，
+
+为了确定最终数组的大小，这里使用了两个值来维护遍历时行坐标的上界和下界（这两个值要在整个遍历过程中更新，因此应该传引用），
+
+
+
+````c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+ public:
+    vector<vector<int>> verticalTraversal(TreeNode* root) {
+        int min_x = INT_MAX;  // 横坐标的下限
+        int max_x = INT_MIN;  // 横坐标的上限
+        
+        // 这里的值是有可能重复的，所以这里用 multiset
+        map<pair<int, int>, multiset<int>> hash;  // {y, x} -> {val}
+        // 遍历树，添加结果
+        Traversal(root, hash, 0, 0, min_x, max_x);
+        vector<vector<int>> res(max_x - min_x + 1);
+        // 遍历结果集中的所有元素，添加到对应的数组中
+        for (const auto& it : hash) {
+            int x = it.first.second - min_x;
+            res[x].insert(end(res[x]), begin(it.second), end(it.second));
+        }
+        
+        return res;
+    }
+    
+ private:
+    // 这里采用的是中序遍历
+    void Traversal(TreeNode *root, map<pair<int, int>, multiset<int>>& hash, 
+                  int x, int y, int& min_x, int& max_x) {
+        if (!root) {
+            return;
+        }
+        
+        min_x = min(min_x, x);  // 维护 x 的下限
+        max_x = max(max_x, x);  // 维护 x 的上限
+        hash[{y, x}].insert(root->val);  // 插入到对应的结果集中
+        // 遍历左子树
+        Traversal(root->left, hash, x - 1, y + 1, min_x, max_x);
+        // 遍历右子树
+        Traversal(root->right, hash, x + 1, y + 1, min_x, max_x);
+    }
+};
+````
+
