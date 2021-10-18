@@ -33,44 +33,44 @@ Output: ["()"]
 * 这道题初看是判断括号的有效，但仔细以下真的这样写，时间复杂度巨高，后来还是看题解吧
 * 可以DFS 和 BFS 来解决，
 
-## 代码
+### Solution 1： DFS
 
-````c++
+`````c++
 class Solution {
 public:
-    vector<string> generateParenthesis(int n) {        
-        DFS(n, n);
-        return res;
+    vector<string> generateParenthesis(int n) {
+        string path = "";
+        path.reserve(16);  // 这里可以预分配，减少内存分配
+        DFS(n, n, path);
+        return res_;
     }
-    
+
  private:
-    vector<string> res;
-    string path;
-    
-    void DFS(int left, int right) {
-        if (left == 0 && right == 0) {  // 不能再添加括号的时候返回
-            res.push_back(path);
+    vector<string> res_;
+
+    void DFS(int left, int right, string& path) {
+        if (left == 0 && right == 0) {  // 左右剩余括号数均为 0
+            res_.push_back(path);  // 添加到结果集中
             return;
         }
-        
-        if (left > right) { // 剪枝操作
-            return;
+
+        if (left > 0) {  // 只要左括号数有剩余，就可以添加
+            path.push_back('(');
+            DFS(left - 1, right, path);
+            path.pop_back();
         }
-        
-        if (left > 0) {
-            path += '(';
-            DFS(left - 1, right);
-            path.pop_back();    // 这里需要撤销状态的更改，
-        }
-        
-        if (right > 0) {
-            path += ')';
-            DFS(left, right - 1);
+        if (right > left) {  // 只有右括号剩余严格大于左括号剩余，才可以添加右括号
+            path.push_back(')');
+            DFS(left, right - 1, path);
             path.pop_back();
         }
     }
 };
+`````
 
+
+
+````c++
 // BFS
 class Solution {
 public:

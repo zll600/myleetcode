@@ -1,5 +1,7 @@
 # [62. Unique Paths](https://leetcode.com/problems/unique-paths/)
 
+## 题目
+
 A robot is located at the top-left corner of a `m x n` grid (marked 'Start' in the diagram below).
 
 The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
@@ -58,7 +60,19 @@ Output: 6
 
 * 这是一道 dp 路径问题，求方案数，我们要做到不重不漏
 
-## 代码
+**状态定义**：`dp[i][j]` 表示从起点到 [i, j]位置的路径数，
+
+**状态转移**: 
+
+````
+dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+````
+
+**初始化**：
+
+从状态转移方程可以得出，我们要想让递推进行下去，则必须要初始化第一行，第一列，所以这些地方全部初始化为 1；
+
+### Solution 1: DP
 
 `````c++
 class Solution {
@@ -77,11 +91,30 @@ public:
 		
         for (int i = 1; i < m; ++i) {
             for (int j = 1; j < n; ++j) {
-                dp[i][j] = dp[i][j - 1] + dp[i - 1][j];
+                dp[i][j] = dp[i][j - 1] + dp[i - 1][j];  // 状态转移
             }
         }
         return dp[m - 1][n - 1];   
     }
 };
 `````
+
+### Solution: 空间优化
+
+````c++
+class Solution {
+public:
+	int uniquePaths(int m, int n) {
+		vector<int> dp(n, 1);
+
+        for (int row = 1; row < m; ++row) {
+            for (int col = 1; col < n; ++col) {
+                dp[col] = dp[col] + dp[col - 1];
+            }
+        }
+
+        return dp[n - 1];
+    }
+};
+````
 

@@ -51,7 +51,39 @@ Output: 0
 
 * 利用滑动窗口的思想，右侧指针不断向右扩，直至遇见重复字符，一旦遇到重复字符，左侧边界需要收缩，直至区间中不含重复字符，重复这个过程，每次迭代都要计算子串的长度，并判断是否要更新最长长度，
 
-## 代码
+### Solution 1: Sliding Window + unordered_map
+
+````
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        if (s.empty()) {
+            return 0;
+        }
+
+        unordered_map<char, int> ht;
+        int left = 0;
+        int right = 0;
+        int res = 0;
+        const int size = s.size();
+        // 这里维护的滑动窗口是 [left, right)，是结果
+        while (right < size) {
+            if (ht.find(s[right]) != ht.end()) {
+                left = max(left, ht.at(s[right]) + 1);  // 取二者中最大的，举例：abba
+            }
+            ht[s[right]] = right;  // 更新映射
+            ++right;  // 右移
+            res = max(res, right - left);  // 更新结果
+        }
+
+        return res;
+    }
+};
+````
+
+
+
+
 
 ````c++
 class Solution {

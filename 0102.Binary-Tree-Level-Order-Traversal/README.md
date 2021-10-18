@@ -98,7 +98,51 @@ public:
 
 ### Solution 2: DFS
 
-````
+DFS 的解法在于，每个节点都必须和其层数绑定，即这里的状态转移，除了节点的位置之外，还有节点的层数，
 
+````c++
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        if (!root) {
+            return vector<vector<int>>();
+        }
+        
+        LevelOrder(root, 0);
+        return res_;
+    }
+    
+ private:
+    vector<vector<int>> res_;
+    
+    void LevelOrder(TreeNode *root, int level) {
+        if (!root) {
+            return;
+        }
+        
+        // 如果层数到达上限，新建一行
+        if (level == res_.size()) {
+            res_.push_back({root->val});
+        } else {
+            // 否则，插入到已有的行中
+            res_[level].push_back(root->val);
+        }
+        
+        // 递归遍历左右子树
+        LevelOrder(root->left, level + 1);
+        LevelOrder(root->right, level + 1);
+    }
+};
 ````
 

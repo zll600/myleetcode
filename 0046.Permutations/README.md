@@ -46,34 +46,36 @@ Output: [[1]]
 ````c++
 class Solution {
 public:
-    
     vector<vector<int>> permute(vector<int>& nums) {
-        vector<bool> used(nums.size(), false);
-        Backtracking(nums, used);
-        return res;
+        // 这里使用一个访问数组，记录是否已经选择过了
+        vector<bool> visited(nums.size(), 0);
+        Backtracking(nums, visited);
+        return res_;
     }
-    
+
  private:
-    vector<vector<int>> res;
-    vector<int> path;
-    
-    void Backtracking(const vector<int>& nums, vector<bool>& used) {
-        if (path.size() == nums.size()) {
-            res.push_back(path);
+    vector<vector<int>> res_;
+    vector<int> path_;
+
+    void Backtracking(vector<int>& nums, vector<bool>& visited) {
+        // 递归终止条件
+        if (path_.size() == nums.size()) {
+            res_.push_back(path_);
             return;
         }
         
-        int size = nums.size();
-        for (int i = 0; i < size; ++i) {
-            if (used[i] == true) {
-                continue;
+        const int size = nums.size();
+        for (int i = 0; i < size; ++i) {  // 这里从 0 开始遍历，跳过已经加入的元素
+            if (!visited[i]) {
+                // 访问
+                visited[i] = true;
+                path_.push_back(nums[i]);
+                // 下一个
+                Backtracking(nums, visited);
+                // 回溯
+                path_.pop_back();
+                visited[i] = false;
             }
-            
-            path.push_back(nums[i]);
-            used[i] = true;
-            Backtracking(nums, used);
-            path.pop_back();
-            used[i] = false;
         }
     }
 };

@@ -44,7 +44,36 @@ Output: 0
 
 利用滑动窗口，右窗口一直向右扩，如果`sum`大于等于`target`,就一直缩小左边界，直到窗口的累加和不满条件，每次更新左边界的时候，都要更新最终的结果
 
-## 代码
+### Solution 1： Sliding Window
+
+````c++
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int sum = 0;  // 子数组的和
+        int left = 0;  // 右边界
+        int right = 0;   // 左边界
+
+        int res = INT_MAX;  // 取最小值，初始化最大值
+        const int size = nums.size();
+        // 循环不变量：[left, right) 
+        while (right < size) {
+            sum += nums[right];  // 扩大窗口
+            ++right;
+
+            while (sum >= target) {  // 缩小窗口
+                res = min(res, right - left);  // 更新值
+                sum -= nums[left];
+                ++left;
+            }
+        }
+
+        return res == INT_MAX ? 0 : res;
+    }
+};
+````
+
+
 
 ````c++
 class Solution {
