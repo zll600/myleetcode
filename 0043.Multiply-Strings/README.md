@@ -127,3 +127,48 @@ class Solution {
 };
 `````
 
+### 解法2
+
+这里放上霜神的写法
+
+`````c++
+class Solution {
+public:
+    string multiply(string num1, string num2) {
+        if (num1[0] == '0' || num2[0] == '0') {
+            return "0";
+        }
+
+        const int len1 = num1.size();
+        const int len2 = num2.size();
+        vector<int> res(len1 + len2);
+        for (int i = 0; i < len1; ++i) {
+            for (int j = 0; j < len2; ++j) {
+                // 将第 i 位和 第 j 位的乘积的结果，放在第 i + j + 1 位上
+                res[i + j + 1] += (num1[i] - '0') * (num2[j] - '0');
+            }
+        }
+
+        for (int i = len1 + len2 - 1; i > 0; --i) {
+            // 处理进位
+            res[i - 1] += res[i] / 10;
+            res[i] %= 10;
+        }
+
+        // 处理前导0
+        int i = 0;
+        if (res[0] == 0) {
+            ++i;
+        }
+        // 生成字符串
+        string str = "";
+        while (i < len1 + len2) {
+            str += to_string(res[i]);
+            ++i;
+        }
+
+        return str;
+    }
+};
+`````
+
