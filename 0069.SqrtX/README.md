@@ -41,34 +41,30 @@ Explanation: The square root of 8 is 2.82842..., and since the decimal part is t
 * while(lo < hi) （[lo, hi]）这中写法将整个区间划分为两部分，一部分，肯定不包含最终的结果，另一部分，可能包含最终的结果。考虑满足怎样条件的 mid 肯定不是最终答案，然后其反面就是最终答案所在的区间。这中写法还有一个好处是，退出循环时 lo == hi，返回任意一个都可以。
 * 这道题还需要注意 mid 的求解方法，
 
-## 代码
+### Solution : Binary Search
 
 ````c++
 class Solution {
 public:
     int mySqrt(int x) {
-        if (x == 0) {
-            return 0;
-        }
-        if (x == 1) {
-            return 1;
+        if (x == 0 || x == 1) {
+            return x;
         }
         
-        
-        int lo = 1;
-        int hi = x / 2;
-        
+        int lo = 0;
+        int hi = x;
         while (lo < hi) {
-            int mid = lo + (hi - lo + 1L) / 2;  // 这里通过 +1L 操作将 mid 改为向上取整，
-                                                // 并且进行暂时的整型提升，来避免溢出
-            if (mid > x / mid) {       // 这里将乘法转变为除法，避免溢出
-                hi = mid - 1;
-            } else {
+            int mid = lo + (hi - lo + 1L) / 2;  // 这里做一次整型提升
+            
+            // 这里用 除法代替乘法可以避免溢出
+            if (mid <= x / mid) {  // 找到 <= 的最后一个
                 lo = mid;
+            } else {
+                hi = mid - 1;
             }
         }
         
-        return lo;
+        return hi;
     }
 };
 ````

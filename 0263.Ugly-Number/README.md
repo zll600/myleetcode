@@ -56,7 +56,7 @@ Explanation: 1 has no prime factors, therefore all of its prime factors are limi
 
 ### 解法1
 
-判断是否能被2， 3， 5 整除，如果可以，最终的结果应该是 1，
+判断是否能被2， 3， 5 整除，如果可以，最终的结果应该是 1，这里需要注意的是 1 也是满足条件的
 
 `````
 class Solution {

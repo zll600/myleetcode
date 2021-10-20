@@ -42,39 +42,29 @@ Explanation: Intervals [1,4] and [4,5] are considered overlapping.
 
 这里注意在合并区间的时候，新的右边界取的是二者中的最大值
 
-* note ：这道题的 C++ 代码写的不是很理想，以后修正
-
-## 代码
+### Solution 1:
 
 `````c++
 class Solution {
 public:
     vector<vector<int>> merge(vector<vector<int>>& intervals) {
-        if (intervals.size() < 2) {
+        if (intervals.size() < 2) {  // 边界情况
             return intervals;
         }
         
-        // 按照每个区间的左端点升序排序
-        sort(intervals.begin(), intervals.end(), [](const vector<int>& lhs, const vector<int>& rhs) -> bool {
-            return lhs[0] < rhs[0];
-        });
-        
-        int size = intervals.size();
+        sort(intervals.begin(), intervals.end());  // 按照每一项的 start 按照升序排序
         vector<vector<int>> res;
-        res.push_back(intervals[0]);
-        
-        for (int i = 1; i < intervals.size(); ++i) {
-            // 拿出队尾的那一项
-            vector<int> tmp = res.back();
-            
-            if (intervals[i][0] > tmp[1]) {
+        res.push_back(intervals[0]);  // 先加入进结果集中
+        int idx = 0;  // 记录 res 中的最后一项
+        const int size = intervals.size();
+        for (int i = 1; i < size; ++i) {
+            if (intervals[i][0] > res[idx][1]) {  // 不能合并
+                ++idx;
                 res.push_back(intervals[i]);
-            } else {
-                // 注意这里应该取二者中的最大值
-                res.back()[1] = max(res.back()[1], intervals[i][1]);
+            } else {  // 可以合并
+                res[idx][1] = max(res[idx][1], intervals[i][1]);  // 这里注意，合并时，必须选最大的
             }
         }
-        
         
         return res;
     }
