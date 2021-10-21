@@ -39,3 +39,10 @@ Explanation: The endWord "cog" is not in wordList, therefore there is no valid t
 - `beginWord`, `endWord`, and `wordList[i]` consist of lowercase English letters.
 - `beginWord != endWord`
 - All the words in `wordList` are **unique**.
+
+## 题目大意
+
+给定两个单词 beginword 和 endword，使用一个单词列表完成由 beginword 到 endword 的转换，找出所有的最短转化序列，转化遵循以下条件:
+
+* 相邻两个单词只有一个字母不同
+* 转换过程中的中间单词必须是字典中的单词，beginword 不在单词列表中
