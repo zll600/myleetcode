@@ -47,6 +47,8 @@ Output: 1
 
 ## 解题思路
 
+### Solution 1: DP
+
 * 这是一道 DP 01 背包的问题，
 * 状态的定义是 `dp[i][j]` 在[0, i] 的区间中和为 j的方法数
 * 最终答案为 `dp[size][target]`
@@ -54,13 +56,9 @@ Output: 1
 * 状态转移方程为 `dp[i][j] = dp[i - 1][j - nums[i]] + dp[i - 1][j + nums[i]]`
 * 这道题目还需要注意的一点是 第二维度的取值范围是：sum 为数组所有元素的总和，j 的范围是 `[-sum, sum]`
 
-
-
 这道题目dp 还可以优化，留待以后实现
 
-## 代码
-
-`````
+`````c++
 class Solution {
 public:
     int findTargetSumWays(vector<int>& nums, int target) {
@@ -91,4 +89,104 @@ public:
     }
 };
 `````
+
+### Solution 2: DFS
+
+代码比较简单，但是效率有问题
+
+````c++
+class Solution {
+ public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        const int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum < abs(target)) {  // 减枝操作
+            return 0;
+        }
+        
+        return DFS(nums, 0, target);
+    }
+
+ private:
+    int DFS(const vector<int>& nums, int idx, long target) {
+        if (idx == nums.size()) {
+            return target == 0 ? 1 : 0;
+        }
+
+        int res = 0;
+        // 使用 "-" 号
+        res += DFS(nums, idx + 1, target - nums[idx]);
+        // 使用 "+" 号
+        res += DFS(nums, idx + 1, target + nums[idx]);
+
+        return res;
+    }
+};
+````
+
+### Solution 3: DP
+
+这种写法时参考花花酱的写法写的：https://zxi.mytechroad.com/blog/dynamic-programming/leetcode-494-target-sum/
+
+````c++
+class Solution {
+ public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        const int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum < abs(target)) {  // 减枝
+            return 0;
+        }
+
+        const int offset = sum;  // 因为要使用数组索引来表示，所以加一个偏移
+        const int size = nums.size();
+        // ways[i][j] 表示由[0, i - 1]位置上的数组成的和为 j - offset 的方法数
+        vector<vector<int>> ways(size + 1, vector<int>(sum + offset + 1, 0));
+        // 初始化，不用任何数，只能组成 0，方法数为 1
+        ways[0][offset] = 1;
+        for (int i = 0; i < size; ++i) {
+            for (int j = nums[i]; j < 2 * sum + 1 - nums[i]; ++j) {
+                // 状态转移
+                // 如果 ways[i][j] 是可达的
+                if (ways[i][j]) {
+                    // 下面两个就是可达的
+                    ways[i + 1][j - nums[i]] += ways[i][j];
+                    ways[i + 1][j + nums[i]] += ways[i][j];
+                }
+            }
+        }
+        // 最后取结果时，一定要加上偏移
+        return ways[size][target + offset];
+    }
+};
+````
+
+### 空间优化：
+
+````c++
+class Solution {
+ public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        const int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum < abs(target)) {  // 减枝
+            return 0;
+        }
+
+        const int offset = sum;  // 因为要使用数组索引来表示，所以加一个偏移
+        const int size = nums.size();
+        vector<int> ways(sum + offset + 1, 0);
+        ways[offset] = 1;
+        for (int i = 0; i < size; ++i) {
+            vector<int> tmp(2 * sum + 1, 0);  // 使用滚动数组
+            for (int j = nums[i]; j < 2 * sum + 1 - nums[i]; ++j) {
+                if (ways[j]) {
+                    tmp[j + nums[i]] += ways[j];
+                    tmp[j - nums[i]] += ways[j];
+                }
+            }
+            swap(tmp, ways);  // 交换
+        }
+
+        return ways[target + offset];
+    }
+};
+````
 

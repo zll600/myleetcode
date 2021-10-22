@@ -43,6 +43,8 @@ Output: 0
 
 ## 解法1(数学)
 
+我们想要让所有的数相等，假设目标为 target，那么最小的数到 target 的距离应该是最远的
+
 ````c++
 class Solution {
 public:

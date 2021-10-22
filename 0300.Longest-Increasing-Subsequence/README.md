@@ -51,6 +51,8 @@ Output: 1
 
 这是一道很经典的动态规划问题 LIS 问题
 
+### Solution 1:
+
 状态的定义：dp[i] 表示以 i 位置结尾的子序列的长度
 
 状态转移：
@@ -89,6 +91,56 @@ public:
         }
         
         return res;
+    }
+};
+````
+
+### Solution 2:
+
+这种解法利用一个数组，始终维持某个长度的子序列的最后一个元素，我们让这个最后一个元素尽量小，则最终的子序列就可以尽量的长
+
+这道题的解法可以参考这篇题解：https://leetcode.com/problems/longest-increasing-subsequence/submissions/
+
+````c++
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if (nums.size() < 2) {
+            return nums.size();
+        }
+        
+        const int size = nums.size();
+        int res = 0;
+        
+        // tail 数组定义：tail[i] 表示长度为 i + 1 的子序列末尾元素的值
+        vector<int> tail(size);
+        // 遍历nums[0]，直接放在第一个位置
+        tail[0] = nums[0];
+        // end 表示有序数组 tail，最后一个已赋值元素的索引
+        int end = 0;
+        
+        for (int i = 1; i < size; ++i) {
+            if (nums[i] > tail[end]) {
+                ++end;
+                tail[end] = nums[i];
+            } else {
+                // 二分查找第一个大于等于 nums[i] 的对象，尝试让该位置上的值更小
+                int left = 0;
+                int right = end;
+                while (left < right) {
+                    int mid = left + (right - left) / 2;
+                    // 要找第一个大于等于的，所以应该将右边界左移
+                    if (tail[mid] >= nums[i]) {
+                        right = mid;
+                    } else {
+                        left = mid + 1;
+                    }
+                }
+                tail[left] = nums[i];
+            }
+        }
+        ++end;
+        return end;
     }
 };
 ````
