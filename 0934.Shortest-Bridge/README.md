@@ -52,6 +52,8 @@ Output: 1
 
 ### Solution 1: BFS + DFS
 
+这种解法，可以参考这篇题解：https://leetcode-cn.com/problems/shortest-bridge/solution/dfszhao-di-yi-ge-dao-bfszhao-zui-duan-ju-9vz5/
+
 具体思路就是先用 DFS 将任意一个岛中的所有元素反转为 2，顺便记录此岛周围的所有 0，
 
 接下来就是和第 542 题一样的过程了， BFS 搜索直到找到第一个 1 为止，直接返回，如果是 2 直接跳过，如果是0，则反转为 2，加入队列中
@@ -62,50 +64,53 @@ Output: 1
  class Solution {
  public:
      int shortestBridge(vector<vector<int>>& grid) {
-         rows_ = grid.size();  // 求行数
-         cols_ = grid[0].size();  // 求列数
+         rows_ = grid.size();
+         cols_ = grid[0].size();
          
-         // 先找到任意一个岛，DFS将其所有元素反转为 2
-         bool flipped = false;  // 是否已经找到一个岛
+         // 找到任意一个岛，反转所有元素
+         bool flipped = false;
          for (int i = 0; i < rows_; ++i) {
-             if (flipped) {
+             if (flipped == true) {
                  break;
              }
              for (int j = 0; j < cols_; ++j) {
                  if (grid[i][j] == 1) {
-                     DFS(grid, i, j);  // 这里使用 DFS 来遍历反转一个岛的所有元素
+                     DFS(grid, i, j);
                      flipped = true;
+                     break;  // 确保这个 if 只执行一次
                  }
              }
          }
          
-         // BFS 来求最短路径
+         // 距离
          int level = 0;
-         while (!que_.empty()) {
+         while (!points_.empty()) {
              ++level;
-             const int size = que_.size();  // 一次遍历一层
-             for (int i = 0; i < size; ++i) {
-                 pair<int, int> item = que_.front();
-                 que_.pop();
+             // cout << level << endl;
+             // 遍历整层
+             const int len = points_.size();
+             for (int i = 0; i < len; ++i) {
+                 pair<int, int> item = points_.front();
+                 points_.pop();
+                 
                  int x = item.first;
                  int y = item.second;
                  
-                 // 状态转移
-                 for (const auto& dir : dirs_) {
+                 for (const vector<int>& dir : dirs_) {
                      int nx = x + dir[0];
                      int ny = y + dir[1];
                      
-                     // 下标越界 或者 是本岛中的元素，直接跳过
-                     if (!IsInGrid(nx, ny) || grid[nx][ny] == 2) {
+                     // 如果下标不合法或者值为 2，跳过
+                     if (!IsValid(nx, ny) || grid[nx][ny] == 2) {
                          continue;
                      }
-                     // 如果是 1，说明找到了另一个岛，直接返回
+                     // 如果值为 1，直接返回结果
                      if (grid[nx][ny] == 1) {
                          return level;
                      }
-                     // 如果是 0，将 0 反转为 2，并入本岛
+                     // 如果值为 0
                      grid[nx][ny] = 2;
-                     que_.push(make_pair(nx, ny));
+                     points_.push(make_pair(nx, ny));
                  }
              }
          }
@@ -117,40 +122,36 @@ Output: 1
      vector<vector<int>> dirs_ = {
          {1, 0},
          {-1, 0},
-         {0, 1},
-         {0, -1}
+         {0, -1},
+         {0, 1}
      };
      
-     int rows_;
-     int cols_;
+     int rows_;  // 网格的行数
+     int cols_;  // 网格的列数
+     queue<pair<int, int>> points_;  // 队列
      
-     queue<pair<int, int>> que_;
-     
-     bool IsInGrid(int x, int y) {
-         return x >= 0 && x < rows_ && y >= 0 && y <= cols_;
+     // 检验下标是否合法
+     bool IsValid(int x, int y) {
+         return x >= 0 && x < rows_ && y >= 0 && y < cols_;
      }
      
+     // DFS 反转一个岛的值为 2，并将周围的 0 加入队列中
      void DFS(vector<vector<int>>& grid, int x, int y) {
+         // 如果下标越界，或者就是岛的一部分跳过
+         if (!IsValid(x, y) || grid[x][y] == 2) {
+             return;
+         }
+         // 如果是岛周围的 0，加入队列中
+         if (grid[x][y] == 0) {
+             points_.push(make_pair(x, y));
+             return;
+         }
+         
          // 反转
          grid[x][y] = 2;
          // 状态转移
-         for (const auto& dir : dirs_) {
-             int nx = x + dir[0];
-             int ny = y + dir[1];
-             
-             // 下标越界 或者已经反转过了，直接跳过
-             if (!IsInGrid(nx, ny) || grid[nx][ny] == 2) {
-                 continue;
-             }
-             
-             // 将岛周围的 0 全部加入到 队列中
-             if (grid[nx][ny] == 0) {
-                 que_.push(make_pair(nx, ny));
-                 continue;
-             }
-             
-             // 沿着岛中的 1 继续深搜
-             DFS(grid, nx, ny);
+         for (const vector<int>& dir : dirs_) {
+             DFS(grid, x + dir[0], y + dir[1]);
          }
      }
  };
