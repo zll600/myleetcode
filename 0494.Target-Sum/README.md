@@ -123,6 +123,53 @@ class Solution {
 };
 ````
 
+### Solution 3： DFS + 记忆化搜索
+
+````c++
+// hash function
+struct PairHash {
+    template <typename T1, typename T2>
+    size_t operator()(const pair<T1, T2>& p) const {
+        auto hash1 = hash<T1>{}(p.first);
+        auto hash2 = hash<T2>{}(p.second);
+        return hash1 ^ hash2;
+    }
+};
+
+class Solution {
+ public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        unordered_map<pair<int, int>, int, PairHash> cache;
+
+        return DFS(nums, 0, target, cache);
+    }
+
+ private:
+    int DFS(const vector<int>& nums, int idx, int target,
+            unordered_map<pair<int, int>, int, PairHash>& cache) {
+        // 是否已到边界
+        if (idx == nums.size()) {
+            return target == 0 ? 1 : 0;  // 更新
+        }
+        
+        // 先查缓存，这里的记录的 key 时 idx 和 target
+        pair<int, int> item(idx, target);
+        if (cache.find(item) != cache.end()) {
+            return cache.at(item);
+        }
+
+        // 递归计算
+        int add = DFS(nums, idx + 1, target - nums[idx], cache);
+        int sub = DFS(nums, idx + 1, target + nums[idx], cache);
+        cache[item] = add + sub;  // 更新
+        
+        return add + sub;
+    }
+};
+````
+
+
+
 ### Solution 3: DP
 
 这种写法时参考花花酱的写法写的：https://zxi.mytechroad.com/blog/dynamic-programming/leetcode-494-target-sum/
@@ -186,6 +233,35 @@ class Solution {
         }
 
         return ways[target + offset];
+    }
+};
+````
+
+### Solution 4: 0/1 Knapsack
+
+这种解法，可以参考霜神的题解：https://books.halfrost.com/leetcode/ChapterFour/0400~0499/0494.Target-Sum/
+
+````c++
+class Solution {
+ public:
+    int findTargetSumWays(vector<int>& nums, int target) {
+        const int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum < abs(target) || (sum + target) % 2 != 0) {
+            return 0;
+        }
+
+        const int size = nums.size();
+        const int total = (sum + target) / 2;
+        vector<int> dp(total + 1, 0);
+        dp[0] = 1;
+        
+        for (int i = 0; i < size; ++i) {
+            for (int j = total; j >= nums[i]; --j) {
+                dp[j] += dp[j - nums[i]];
+            }
+        }
+
+        return dp[total];
     }
 };
 ````
