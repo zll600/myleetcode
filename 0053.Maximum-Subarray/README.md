@@ -49,6 +49,8 @@ Output: 23
 
 先说以下这道题目很适合用动态规划来解决，但是也有其他的解法
 
+这道题目可以参考这篇题解：https://leetcode-cn.com/problems/maximum-subarray/solution/dong-tai-gui-hua-fen-zhi-fa-python-dai-ma-java-dai/
+
 ### 解法1(动态规划)
 
 状态的定义：`dp[i]`表示以 i 位置结尾的和最大的连续子数组，
@@ -172,4 +174,54 @@ public:
     }
 };
 `````
+
+### Solution
+
+```c++
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int res = INT_MIN;
+        int sum = 0;
+        for (int num : nums) {
+            if (sum <= 0) {
+                sum = num;
+            } else {
+                sum += num;
+            }
+
+            res = max(res, sum);
+        }
+
+        return res;
+    }
+};
+```
+
+### Solution ： DP
+
+````c++
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        const int size = nums.size();
+        if (size < 2) {
+            return nums[0];
+        }
+        // 状态定义: dp[i] 表示以位置 i 结尾的子数组的长度
+        vector<int> dp(size, 0);
+        dp[0] = nums[0];  // 初始化
+
+        int res = nums[0];
+        for (int i = 1; i < size; ++i) {
+            // 状态转移
+            dp[i] = max(nums[i], dp[i - 1] + nums[i]);
+            // 更新结果
+            res = max(res, dp[i]);
+        }
+        // 返回结果
+        return res;
+    }
+};
+````
 

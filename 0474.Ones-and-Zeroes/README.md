@@ -43,6 +43,10 @@ Explanation: The largest subset is {"0", "1"}, so the answer is 2.
 
 ## 解题思路
 
+这道题目可以参考这两篇题解：https://leetcode-cn.com/problems/ones-and-zeroes/solution/dong-tai-gui-hua-zhuan-huan-wei-0-1-bei-bao-wen-ti/
+
+https://books.halfrost.com/leetcode/ChapterFour/0400~0499/0474.Ones-and-Zeroes/
+
 * 这是一道 DP 01 背包的题目，
 * 这里需要建立一个三维的数组，状态的定义：`dp[i][j][k]`表示输入字符串在子区间 [0, i]，能够使用 j 个0 和 k 个1 的字符串的最大数量，
 * 状态转移方程 `dp[i][j][k] = dp[i - 1][j][k] 不选 或者是 dp[i - 1][j - 当前字符串的 0 的数目][k - 当前字符串的 1 的数目] + 1 选`
@@ -142,4 +146,177 @@ public:
     }
 };
 ```
+
+### Solution 1: DFS(TLE)
+
+使用 DFS 来解决，状态的改变有三个量，数组下表，0 的数目， 1 的数目
+
+`````c++
+class Solution {
+ public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        return DFS(strs, 0, 0, m, n);
+    }
+
+private:
+    int DFS(const vector<string>& strs, int idx, int cnt,
+            int m, int n) {
+        if (m < 0 || n < 0) {
+            return cnt - 1;
+        }
+
+        if (idx == strs.size()) {
+            return cnt;
+        }
+
+        int ones = 0, zeros = 0;
+        for (char c : strs[idx]) {
+            if (c == '1') {
+                ++ones;
+            } else {
+                ++zeros;
+            }
+        }
+
+        return max(DFS(strs, idx + 1, cnt + 1, m - zeros, n - ones),
+                    DFS(strs, idx + 1, cnt, m, n));
+    }
+};
+`````
+
+### Solution 2: DSF + 记忆化(TLE)
+
+````c++
+class Solution {
+ public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        unordered_map<string, int> cache;
+        return DFS(strs, 0, 0, m, n, cache);
+    }
+
+private:
+    int DFS(const vector<string>& strs, int idx, int cnt,
+            int m, int n, unordered_map<string, int>& cache) {
+        if (m < 0 || n < 0) {
+            return cnt - 1;
+        }
+
+        if (idx == strs.size()) {
+            return cnt;
+        }
+
+        string key = to_string(idx) + '-' + to_string(cnt) + '-'
+                    + to_string(m) + '-' + to_string(n);
+        if (cache.find(key) != cache.end()) {
+            return cache.at(key);
+        }
+
+        int ones = 0, zeros = 0;
+        for (char c : strs[idx]) {
+            if (c == '1') {
+                ++ones;
+            } else {
+                ++zeros;
+            }
+        }
+
+        int res =  max(DFS(strs, idx + 1, cnt + 1, m - zeros, n - ones, cache),
+                    DFS(strs, idx + 1, cnt, m, n, cache));
+        cache[key] = res;
+        return res;
+    }
+};
+````
+
+### Solution : DP
+
+`````c++
+class Solution {
+ public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        const int size = strs.size();
+        // dp[i][j][k] 表示 [0, i) 范围内的元素构成 j个0，k个1
+        vector<vector<vector<int>>> dp(size + 1,
+                                        vector<vector<int>>(m + 1, vector<int>(n + 1)));
+        // 状态转移
+        for (int i = 1; i < size + 1; ++i) {
+            // 取得 0 和 1 的个数
+            pair<int, int> cnt = Calc(strs[i - 1]);
+            for (int j = 0; j < m + 1; ++j) {
+                for (int k = 0; k < n + 1; ++k) {
+                    // 先继承上一层，
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    // 更新去最大
+                    if (j >= cnt.first && k >= cnt.second) {
+                        dp[i][j][k] = max(dp[i][j][k],
+                                dp[i - 1][j - cnt.first][k - cnt.second] + 1);
+                    }
+                }
+            }
+        }
+
+        return dp[size][m][n];
+    }
+
+ private:
+    pair<int, int> Calc(const string& str) {
+        int zeros = 0, ones = 0;
+        for (char c : str) {
+            if (c == '1') {
+                ++ones;
+            } else {
+                ++zeros;
+            }
+        }
+
+        return pair<int, int>(zeros, ones);
+    }
+};
+`````
+
+### Solution 1: dp + 空间优化
+
+关于这里为什么要从后向前算，这里可以现写三维，然后向二维优化，就会发现，因为这里层，只用到上一层的值，如果从前向后更新，则还需要保存修改之前的值
+
+````c++
+class Solution {
+ public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        // dp[i][j] 表示可以组成 i 个0 和 j 个 1 的最大元素数
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        
+        // 遍历所有的字符串
+        for (const string& str : strs) {
+            // 取得 0 和 1 的个数
+            pair<int, int> cnt = Calc(str);
+            // 如果不满足条件，直接返回
+            if (cnt.first > m || cnt.second > n) {
+                continue;
+            }
+            // 状态转移，这里从后向前算，可以避免复制数组
+            for (int i = m; i >= cnt.first; --i) {
+                for (int j = n; j >= cnt.second; --j) {
+                    dp[i][j] = max(dp[i][j], dp[i - cnt.first][j - cnt.second] + 1);
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+
+ private:
+    pair<int, int> Calc(const string& str) {
+        int zeros = 0, ones = 0;
+        for (char c : str) {
+            if (c == '1') {
+                ++ones;
+            } else {
+                ++zeros;
+            }
+        }
+
+        return pair<int, int>(zeros, ones);
+    }
+};
+````
 

@@ -55,9 +55,11 @@ Explanation: There is no such common subsequence, so the result is 0.
 
 ## 解题思路
 
-这是一道很经典的 dp 问题
+这是一道很经典的 dp 问题，著名的 LCS 问题
 
-## 解法1（DP）
+### Solution 1: DP
+
+这种解法可以参考霜神的题解：https://books.halfrost.com/leetcode/ChapterFour/1100~1199/1143.Longest-Common-Subsequence/
 
 状态定义和转移方程：参见代码
 
@@ -69,16 +71,27 @@ public:
     int longestCommonSubsequence(string text1, string text2) {
         int len1 = text1.size();
         int len2 = text2.size();
+        // dp[i][j] 表示 [0, i)以 i - 1 位置结尾的字符串, 和[0, j) 以 j - 1 位置结尾的字符串
+        // 的最长公共子串的长度
+        vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1));
         
-        // 状态定义：
-        // dp[i][j] 表示text1[0, i - 1] 和 text2[0, j - 1] 中的最长公共子串
-        vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1, 0));
+        // 初始化，因为默认初始化为0，所以下面其实可以省略不写
         
-        for (int i = 1; i <= len1; ++i) {
-            for (int j = 1; j <= len2; ++j) {
-                if (text1[i - 1] == text2[j - 1]) {  // 如果字符相同，则说明公共子串可以增大
+        /* text1 的 [0, i) 和 text2[] 匹配
+        for (int i = 0; i < len1 + 1; ++i) {
+            dp[i][0] = 0;
+        }
+        text2 的[0, j) 和 text1[] 匹配
+        for (int j = 0; j < len2 + 1; ++j) {
+            dp[0][j] = 0;
+        }
+        */
+        for (int i = 1;  i < len1 + 1; ++i) {
+            for (int j = 1; j < len2 + 1; ++j) {
+                /// 状态转移
+                if (text1[i - 1] == text2[j - 1]) {
                     dp[i][j] = dp[i - 1][j - 1] + 1;
-                } else {  // 否则，选择二者中较大的一个
+                } else {
                     dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
                 }
             }
