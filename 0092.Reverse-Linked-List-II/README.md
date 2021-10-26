@@ -37,6 +37,10 @@ Output: [5]
 
 ## 解题思路
 
+### Solution 1:
+
+这种解法可以参考这篇题解：https://books.halfrost.com/leetcode/ChapterFour/0001~0099/0092.Reverse-Linked-List-II/
+
 * 因为没有说明，所有有可能需要翻转头节点，所以先设一个虚拟的头结点，找到翻转区间的前一个节点pre，然后利用“头插法”，将后面的需要反转的节点插入到pre 之后，循环次数用 right - left 表示。
 * 利用头插法进行原地反转，将后面的插入到pre 之后的过程，就是 cur 后移的过程，相当于游标已经移动，因此这道题目，不用设置游标，并使用 p = p->next操作，
 
@@ -54,23 +58,26 @@ Output: [5]
 class Solution {
 public:
     ListNode* reverseBetween(ListNode* head, int left, int right) {
-        ListNode *dummy = new ListNode(-1, head);
-        ListNode *pre = dummy;
-        
-        for (int i = 0; i < left - 1; ++i) {
-            pre = pre->next;
+        ListNode *dummy = new ListNode(0, head);
+        ListNode *prev = dummy;
+        // 这道题题目也可以不用判断 prev 是否为空，题目中有范围限制
+        for (int i = 0; i < left - 1 && prev != nullptr; ++i) {
+            prev = prev->next;
         }
-        if (pre == nullptr) {
-            return head;
+        // 如果为空，直接返回 nullptr;
+        if (!prev) {
+            return nullptr;
         }
         
-        ListNode *cur = pre->next;
+        // 下面这部分，还是画图想想
+        ListNode *cur = prev->next;
         for (int i = 0; i < right - left; ++i) {
-            ListNode *tmp = pre->next;
-            pre->next = cur->next;
+            ListNode *tmp = prev->next;
+            prev->next = cur->next;
             cur->next = cur->next->next;
-            pre->next->next = tmp;
+            prev->next->next = tmp;
         }
+        
         return dummy->next;
     }
 };

@@ -91,40 +91,46 @@ Output: -1
 
 这里放上一篇题解：https://leetcode-cn.com/problems/compare-version-numbers/solution/gong-shui-san-xie-jian-dan-zi-fu-chuan-m-xsod/
 
+这种解法直接利用库函数 stoi 来进行数字的转化，所以代码实现的难度不高
+
 `````c++
 class Solution {
 public:
     int compareVersion(string version1, string version2) {
-        string item = "";
+        vector<string> strs1 = Split(version1, '.');
+        vector<string> strs2 = Split(version2, '.');
         
-        // 先分隔字符串，然后逐个进行比较
-        stringstream ss1(version1);
-        vector<string> strs1;
-        while (getline(ss1, item, '.')) {
-            strs1.push_back(item);
-        }
-        
-        stringstream ss2(version2);
-        vector<string> strs2;
-        while (getline(ss2, item, '.')) {
-            strs2.push_back(item);
-        }
-        
-        int i = 0;
-        int j = 0;
-        // 将字符串转化为整数进行比较
-        while (i < strs1.size() || j < strs2.size()) {
-            int a = i < strs1.size() ? stoi(strs1[i]) : 0;
-            int b = j < strs2.size() ? stoi(strs2[j]) : 0;
+        const int size1 = strs1.size();
+        const int size2 = strs2.size();
+        int idx1 = 0, idx2 = 0;
+        // 逐个匹配
+        while (idx1 < size1 || idx2 < size2) {
+            // 如果没有指定的话，记作 0
+            int num1 = idx1 < size1 ? stoi(strs1[idx1]) : 0;
+            int num2 = idx2 < size2 ? stoi(strs2[idx2]) : 0;
             
-            if (a != b) {
-                return a > b ? 1 : -1;
+            // 一旦不匹配直接返回
+            if (num1 != num2) {
+                return num1 > num2 ? 1 : -1;
             }
-            i++;
-            j++;
+            // 移动下标
+            ++idx1;
+            ++idx2;
+        }
+        return 0;
+    }
+    
+ private:
+    // 拆分字符串
+    vector<string> Split(const string& str, char delim) {
+        vector<string> res;
+        stringstream ss(str);
+        string item = "";
+        while (getline(ss, item, delim)) {
+            res.push_back(item);   
         }
         
-        return 0;
+        return res;
     }
 };
 `````
