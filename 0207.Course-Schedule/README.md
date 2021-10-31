@@ -38,11 +38,13 @@ To take course 1 you should have finished course 0, and to take course 0 you sho
 - `0 <= ai, bi < numCourses`
 - All the pairs prerequisites[i] are **unique**.
 
-## 解题思路
+## 题目大意
 
 你总计有 numCourse 的课程要选，从 0 到 numCourse - 1，给定一个数组 prerequisites 其中 prerequisies[i] = [ai, bi] 表示你在修 bi 表示的课程前必须先修完 ai 表示的课程
 
 - 例如，先修课程对 `[0, 1]` 表示：想要学习课程 `0` ，你需要先完成课程 `1` 。
 
 如果能完成所有的课，返回 true，否则返回 false，
+
+## 解题思路
 
