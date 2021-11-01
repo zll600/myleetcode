@@ -57,3 +57,37 @@ As there are multiple longest nice substrings, return "dD" since it occurs earli
 
 ## 解题思路
 
+这道题目可以参考这篇题解：https://leetcode-cn.com/problems/search-insert-position/solution/te-bie-hao-yong-de-er-fen-cha-fa-fa-mo-ban-python-/
+
+### Solution 1: Brute force
+
+这种解法枚举每一个子串的 起点和终点，统计其中的大写和小写的字母的数量，更新最长的子串
+
+````c++
+class Solution {
+public:
+    string longestNiceSubstring(string s) {
+        const int size = s.size();
+        string ans = "";
+        
+        for (int i = 0; i < size; ++i) {
+            int lower = 0, upper = 0;
+            
+            for (int j = i; j < size; ++j) {
+                if (islower(s[j])) {
+                    lower |= 1 << (s[j] - 'a');
+                } else {
+                    upper |= 1 << (s[j] - 'A');
+                }
+                
+                if (lower == upper && j - i + 1 > ans.size()) {
+                    ans = s.substr(i, j - i + 1);
+                }
+            }
+        }
+        
+        return ans;
+    }
+};
+````
+
