@@ -48,3 +48,70 @@ To take course 1 you should have finished course 0, and to take course 0 you sho
 
 ## 解题思路
 
+这道题目是一道典型的拓扑排序的题目，很
+
+### Solution 1: BFS + Greedy
+
+这种解法可以参考这篇题解:https://leetcode-cn.com/problems/course-schedule/solution/tuo-bu-pai-xu-by-liweiwei1419/
+
+````c++
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        if (prerequisites.empty()) {
+            return true;
+        }
+        
+        // 入度数组
+        vector<int> in_degrees(numCourses);
+        for (const auto& pre : prerequisites) {
+            ++in_degrees[pre[0]];
+        }
+        
+        // 邻接矩阵
+        unordered_map<int, vector<int>> adj;
+        for (int i = 0; i < numCourses; ++i) {
+            vector<int> tmp;
+            for (const auto& pre : prerequisites) {
+                if (pre[1] == i) {
+                    tmp.push_back(pre[0]);
+                }
+            }
+            adj.emplace(i, tmp);
+        }
+        
+        // 将入度为 0 的节点入队
+        queue<int> que;
+        for (int i = 0; i < numCourses; ++i) {
+            if (in_degrees[i] == 0) {
+                que.push(i);
+            }
+        }
+        
+        vector<int> res;
+        // 开始广度优先搜索
+        while (!que.empty()) {
+            int num = que.front();
+            que.pop();
+            
+            res.push_back(num);
+            const int len = adj.at(num).size();
+            for (int i = 0; i < len; ++i) {
+                // 更新入队数组，
+                --in_degrees[adj.at(num)[i]];
+                // 将入度为 0 的节点入队
+                if (in_degrees[adj.at(num)[i]] == 0) {
+                    que.push(adj.at(num)[i]);
+                }
+            }
+        }
+        
+        return res.size() == numCourses;
+    }
+};
+````
+
+### Solution 2: DFS
+
+这个留待以后实现
+
