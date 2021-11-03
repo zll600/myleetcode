@@ -48,11 +48,23 @@ To take course 1 you should have finished course 0, and to take course 0 you sho
 
 ## 解题思路
 
-这道题目是一道典型的拓扑排序的题目，很
+这道题目是一道典型的拓扑排序的题目，我补充一下这块的知识
+
+拓扑排序也是一种贪心算法，其核心思想也就是每一步选取最优，从而达到全局最优
+
+拓扑排序简介：本质依旧是 bfs + 贪心
+
+应用场景：任务调度计划、课程安排
+
+作用：
+
+* 得到一个「拓扑序」，这个拓扑序不唯一
+* 检测「有向图」是否有环
+  * 无向图中是否有环通过使用并查集来解决
 
 ### Solution 1: BFS + Greedy
 
-这种解法可以参考这篇题解:https://leetcode-cn.com/problems/course-schedule/solution/tuo-bu-pai-xu-by-liweiwei1419/
+这种解法可以参考这篇题解:https://leetcode-cn.com/problems/course-schedule/solution/tuo-bu-pai-xu-by-liweiwei1419/-
 
 ````c++
 class Solution {
@@ -98,7 +110,7 @@ public:
             const int len = adj.at(num).size();
             for (int i = 0; i < len; ++i) {
                 // 更新入队数组，
-                --in_degrees[adj.at(num)[i]];
+                --in_degrees[adj.[num][i]];
                 // 将入度为 0 的节点入队
                 if (in_degrees[adj.at(num)[i]] == 0) {
                     que.push(adj.at(num)[i]);
