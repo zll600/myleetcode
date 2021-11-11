@@ -55,3 +55,50 @@ timeMap.get("foo", 5);         // return "bar2"
   * 如果有多个这样的值，返回 timestamp_prev 最大的那个
   * 如果没有值，返回""
 
+## 解题思路
+
+这种题目需要考虑合适的数据结构，题目中要求不同时间的时间戳存储同一个键的多个值，我们可以想到，值和时间戳是一一对应的，并且由于时间戳有单调递增的特性，所以这里可以使用一个 map来存储`<value, timestamp>`，有了上面这一个组合，这一个 map可以对应一个键，这里无法利用有序的特性，所以，使用unordered_map 即可，
+
+## Solution 1:
+
+这种解法，参考了花花酱的：https://zxi.mytechroad.com/blog/hashtable/leetcode-981-time-based-key-value-store/
+
+`````c++
+class TimeMap {
+public:
+    TimeMap() {
+        
+    }
+    
+    void set(string key, string value, int timestamp) {
+        // 添加元素，key 不能重复，value可以重复
+        data_[key].emplace(std::move(value), std::move(timestamp));
+    }
+    
+    string get(string key, int timestamp) {
+        // 检查键是否存在，
+        auto exist = data_.find(key);
+        if (exist == data_.end()) {  如果不存在，直接返回空
+            return "";
+        }
+        // 二分查找第一个大于 timestamp 的位置
+        auto iter = exist->second.upper_bound(timestamp);
+        if (iter == begin(exist->second)) {  // 如果没有小于等于 timestamp 的位置，直接返回false
+            return "";
+        }
+        return prev(iter)->second;  // 返回第一个符合条件的
+    }
+    
+ private:
+    // 这里使用哈希表浅套map来实现，<key, <value, timestamp>>
+    unordered_map<string, map<int, string>> data_;
+};
+
+/**
+ * Your TimeMap object will be instantiated and called as such:
+ * TimeMap* obj = new TimeMap();
+ * obj->set(key,value,timestamp);
+ * string param_2 = obj->get(key,timestamp);
+ */
+`````
+
