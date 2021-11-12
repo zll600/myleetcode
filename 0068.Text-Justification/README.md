@@ -81,3 +81,66 @@ Output:
 
 ## 解题思路
 
+字符串类的题目还是细节比较多，这里主要就是空格的合理分配了
+
+### Solution 1:
+
+这种解法可以看这篇题解：https://leetcode.com/problems/text-justification/submissions/
+
+这道题目还需要注意边界条件的处理，这道题目以后一定要自己在做一遍，
+
+````c++
+class Solution {
+public:
+    vector<string> fullJustify(vector<string>& words, int max_width) {
+        vector<string> ans;
+        int cnt = 0;
+        int lo = 0;
+        for (int i = 0; i < words.size(); ++i) {
+            cnt += words[i].size() + 1;
+            
+            // 如果是最后一个单词或者，累计长度已经超过最大宽度，则需要进行填充
+            if (i + 1 == words.size() || cnt + words[i + 1].size() > max_width) {
+                ans.push_back(FillWords(words, lo, i, max_width, i + 1 == words.size()));
+                lo = i + 1;  // 下一次开始
+                cnt = 0;  // 清零计数
+            }
+        }
+        
+        return ans;
+    }
+    
+ private:
+    string FillWords(const vector<string>& words, int lo, int hi,
+                     int max_width, bool last_line = false) {
+        int word_cnt = hi - lo + 1;  // 单词的数量
+        int space_cnt = max_width + 1 - word_cnt;  // 除去每个单词尾部的空格，最后一个需要特殊处理
+        for (int i = lo; i <= hi; ++i) {
+            space_cnt -= words[i].size();  // 除去每个单词的长度
+        }
+        
+        int space_suffix = 1;  // 固定的每个单词后面接一个空格
+        int space_avg = (word_cnt == 1) ? 1 : (space_cnt / (word_cnt - 1));  // 每个间隙平均的空格数
+        int space_extra = (word_cnt == 1) ? 0 : (space_cnt % (word_cnt - 1));  // 每个间隙额外的空格数
+        // space_avg + space_extra 才是需要分布的空格总数
+        
+        string ans = "";
+        for (int i = lo; i < hi; ++i) {
+            ans += words[i];  // 接上单词
+            
+            if (last_line) {
+                // 如果是最后一行
+                fill_n(back_inserter(ans), 1, ' ');  // 插入一个空格
+                continue;
+            }
+            
+            // 填入空格
+            fill_n(back_inserter(ans), space_suffix + space_avg + (i - lo < space_extra), ' ');
+        }
+        ans += words[hi];  // 加上最后一个单词
+        fill_n(back_inserter(ans), max_width - ans.size(), ' ');  // 加上所有空余的单词，
+        return ans;
+    }
+};
+````
+
