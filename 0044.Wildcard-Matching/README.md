@@ -70,10 +70,53 @@ Output: false
 ## 解题思路
 
 * 这是一道 字符串匹配问题，可以利用 dp 来求解，
-* 状态定义：`dp[i][j]`表示 s 中 以 i 位置结尾和字符串和 p 中 以 j 位置结尾的字符串匹配的结果
-* 状态转移：
-  * p[j] 为普通字符，匹配的条件是当前位置，和前面所有的位置都要匹配，即为 `dp[i][j] = dp[i - 1][j - 1] && s[i] == p[j]`
-  * p[j] 为‘？’，配的条件是前面所有的位置都匹配，即为`dp[]`
 
-## 代码
+### Solution 1:
+
+这种解法可以参考这篇题解：https://leetcode-cn.com/problems/wildcard-matching/solution/zi-fu-chuan-dong-tai-gui-hua-bi-xu-miao-dong-by-sw/
+
+字符串类型的动态规划题目，状态定义等可以参考代码，这道题难的还是 '*' 的处理和初始化，
+
+
+
+````c++
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        const int len1 = s.size();  // 目标串
+        const int len2 = p.size();  // 格式串
+        // 状态定义:
+        // dp[i][j] 表示 s 的前 i - 1 个字符和 p 的前 j - 1 个字符相匹配的结果
+        vector<vector<bool>> dp(len1 + 1, vector<bool>(len2 + 1));
+        // 初始化
+        dp[0][0] = true;
+        // 处理 p 以'*'开头的情况
+        for (int i = 1; i <= len2; ++i) {
+            if (p[i - 1] != '*') {
+                break;
+            }
+            dp[0][i] = true;
+        }
+        
+        // 状态转移
+        for (int i = 1; i <= len1; ++i) {
+            for (int j = 1; j <= len2; ++j) {
+                if (s[i - 1] == p[j - 1] || p[j - 1] == '?') {
+                    // 匹配单个字符字符
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else if (p[j - 1] == '*') {
+                    // 这里分两种情况讨论
+                    // 1、匹配空串，即 dp[i][j - 1]
+                    // 1、 匹配当前位置 dp[i - 1][j]
+                    dp[i][j] = dp[i - 1][j] || dp[i][j - 1];
+                }
+            }
+        }
+        
+        return dp[len1][len2];
+    }
+};
+````
+
+
 

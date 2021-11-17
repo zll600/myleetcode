@@ -108,3 +108,107 @@ public:
 };
 ````
 
+## Solution 2:
+
+在解法1 的基础上，我们引入记忆化递归，理论上来说，记忆话递归和dp没有优劣之分，只是适用场合不同
+
+````c++
+class Solution {
+public:
+    bool isScramble(string s1, string s2) {
+        if (cache_.count(s1) && cache_[s1].count(s2)) {
+            return cache_[s1][s2];
+        }
+        
+        const int len = s1.size();
+        if (s1 == s2) {  // 如果两个字符串已经相同直接返回 true
+            cache_[s1][s2] = true;
+            return true;
+        }
+        if (CalcFreq(s1) != CalcFreq(s2)) {  // 如果两个字串中的字频数不同，这接返回 false
+            cache_[s1][s2] = false;
+            return false;
+        }
+        
+        // 第一个子问题，分割字符串
+        for (int idx = 1; idx < len; ++idx) {
+            // 第二个子问题，是否交换位置
+            if ((isScramble(s1.substr(0, idx), s2.substr(0, idx))
+                 && isScramble(s1.substr(idx), s2.substr(idx)))
+                || (isScramble(s1.substr(0, idx), s2.substr(len - idx, idx))
+                   && isScramble(s1.substr(idx, len - idx), s2.substr(0, len - idx)))) {
+                cache_[s1][s2] = true;
+                return true;  
+            }
+        }
+        cache_[s1][s2] = false;
+        return false;
+    }
+    
+ private:
+    vector<int> CalcFreq(const string& str) {
+        vector<int> freq(26, 0);
+        for (char c : str) {
+            ++freq[c - 'a'];
+        }
+        return freq;
+    }
+    
+    // 这里用 s1 和 s2 的组合来唯一确定结果
+    unordered_map<string, unordered_map<string, bool>> cache_;
+};
+````
+
+### Solution 3:dp
+
+这种解法可以参考这篇题解：https://leetcode-cn.com/problems/scramble-string/solution/miao-dong-de-qu-jian-xing-dpsi-lu-by-sha-yu-la-jia/
+
+dp的做法也可以参考上面搜索的思路，可以从中得到影响状态转移的变量有那几个，根据 dfs 的主逻辑来做递推的主逻辑， dfs的出口来做初始化条件
+
+````c++
+class Solution {
+public:
+    bool isScramble(string s1, string s2) {
+        const int len = s1.size();
+        // 状态定义：dp[i][j][k] 表示 s1 中从 i 位置开始，s2 中从 j 位置开始，长度为 k 的字符串是否匹配
+        vector<vector<vector<bool>>> dp(len, vector<vector<bool>>(len, vector<bool>(len + 1, false)));
+        // 初始化，长度为 1 的情况
+        for (int i = 0; i < len; ++i) {
+            for (int j = 0; j < len; ++j) {
+                dp[i][j][1] = s1[i] == s2[j];
+            }
+        }
+        
+        // 遍历所有的长度
+        for (int k = 2; k <= len; ++k) {
+            // 遍历 s1
+            for (int i = 0; i <= len - k; ++i) {
+                // 遍历 s2
+                for (int j = 0; j <= len - k; ++j) {
+                    // 遍历所有的分割位置
+                    for (int w = 1; w < k; w++) {
+                        // 状态转移
+                        if (dp[i][j][w] && dp[i + w][j + w][k - w]) {
+                            // s1 的前半部分与 s2 的前半部分比较
+                            // s1 的后半部分与 s2 的后半部分比较
+                            dp[i][j][k] = true;
+                            break;
+                        }
+                        
+                        if (dp[i][j + k - w][w] && dp[i + w][j][k - w]) {
+                            // s1 的前半部分与 s2的后半部分比较
+                            // s1 的后半部分与 s1 的前半部分比较
+                            dp[i][j][k] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 最终的返回结果
+        return dp[0][0][len];
+    }    
+};
+````
+
