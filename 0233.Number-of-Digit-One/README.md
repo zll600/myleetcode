@@ -32,3 +32,7 @@ Output: 0
 
 ## 解题思路
 
+这道题是一道关于数位dp 的题目，可以参考这篇题解：https://leetcode-cn.com/problems/number-of-digit-one/solution/shu-wei-dpjava-by-liweiwei1419-awxv/
+
+### Solution 1:
+
