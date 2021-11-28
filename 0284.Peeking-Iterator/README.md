@@ -59,3 +59,77 @@ peekingIterator.hasNext(); // return False
 
 ## 解题思路
 
+这道题总的来说并不难，但却是挺经典的，可以参考这篇题解：https://leetcode.com/problems/peeking-iterator/discuss/1569292/C%2B%2B
+
+### Solution 1:
+
+具体的解法是：
+
+* PeekingIterator 类中保存下一个值，和一个是否存在的标志
+
+* `PeekingIterator(Iterator<int> nums)`初始化Iterator，设置 cur_（这里设置为 next_可能意思更明了）,和 exist_
+* 后面的逻辑可以参考注释
+
+````c++
+/*
+ * Below is the interface for Iterator, which is already defined for you.
+ * **DO NOT** modify the interface for Iterator.
+ *
+ *  class Iterator {
+ *		struct Data;
+ * 		Data* data;
+ *  public:
+ *		Iterator(const vector<int>& nums);
+ * 		Iterator(const Iterator& iter);
+ *
+ * 		// Returns the next element in the iteration.
+ *		int next();
+ *
+ *		// Returns true if the iteration has more elements.
+ *		bool hasNext() const;
+ *	};
+ */
+
+class PeekingIterator : public Iterator {
+public:
+	PeekingIterator(const vector<int>& nums) : Iterator(nums) {
+	    // Initialize any member here.
+	    // **DO NOT** save a copy of nums and manipulate it directly.
+	    // You should only use the Iterator interface methods.
+	    exist_ = Iterator::hasNext(); 
+        if (exist_) {
+            // 如果存在下一个元素，保存下来
+            cur_ = Iterator::next();
+        }
+        
+	}
+	
+    // Returns the next element in the iteration without advancing the iterator.
+	int peek() {
+        // 返回下一个元素，淡水不移动指针
+        return cur_;
+	}
+	
+	// hasNext() and next() should behave the same as in the Iterator interface.
+	// Override them if needed.
+	int next() {
+	    int tmp = cur_; // 保存下一个元素
+        // 将指针移动道下一个元素处
+        exist_ = Iterator::hasNext();
+        if (exist_) {
+            cur_ = Iterator::next();
+        }
+        return tmp; // 返回下一个元素
+	}
+	
+	bool hasNext() const {
+        // 是否存在下一个元素
+	    return exist_;
+	}
+    
+ private:
+    int cur_; // 下一个元素
+    bool exist_; // 下一个元素是否存在
+};
+````
+
