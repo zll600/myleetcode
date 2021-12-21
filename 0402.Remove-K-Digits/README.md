@@ -46,11 +46,11 @@ Explanation: Remove all the digits from the number and it is left with nothing w
 
 最直观的思路就是遍历整个数，决定每一个位是否要删除，
 
-可以参考这篇题解：https://leetcode-cn.com/problems/remove-duplicate-letters/solution/yi-zhao-chi-bian-li-kou-si-dao-ti-ma-ma-zai-ye-b-4/
-
 这道题目有一个数学知识：对于两个数 123a456 和 123b456，如果 a > b， 那么数字 123a456 大于 数字 123b456，否则数字 123a456 小于等于数字 123b456。也就说，两个相同位数的数字大小关系取决于第一个不同的数的大小。
 
 ### Solution 1: Monotonic Stack
+
+可以参考这篇题解：https://leetcode-cn.com/problems/remove-duplicate-letters/solution/yi-zhao-chi-bian-li-kou-si-dao-ti-ma-ma-zai-ye-b-4/
 
 这种解法利用的是单调栈，维护一个单调递增的单调栈，让权重高的位的数的值小，整体的值就是最小
 
@@ -95,4 +95,44 @@ public:
     }
 };
 ```
+
+### Solution 2:
+
+这种解法，参考的是这篇题解这：https://leetcode-cn.com/problems/remove-k-digits/solution/wei-tu-jie-dan-diao-zhan-dai-ma-jing-jian-402-yi-d/
+
+````c++
+class Solution {
+public:
+    string removeKdigits(string num, int k) {
+        const int len = num.size();
+        if (k == len) {
+            // 特殊情况需要特殊处理
+            return "0";
+        }
+        
+        vector<char> sta; // 这里使用数组来模拟单调递增的栈
+        for (char c : num) {
+            while (k > 0 && !sta.empty() && sta.back() > c) {
+                // 当前元素小于栈顶元素时
+                sta.pop_back();
+                --k;
+            }
+            
+            if (c != '0' || !sta.empty()) {
+                // 这里的写法是为了避免前导 0
+                sta.push_back(c);
+            }
+        }
+        
+        // 可能还没有删够
+        while (k > 0 && !sta.empty()) {
+            sta.pop_back();
+            --k;
+        }
+        
+        // 最终可能已经删完了，结果为空
+        return sta.empty() ? "0" : string(sta.begin(), sta.end());
+    }
+};
+````
 
