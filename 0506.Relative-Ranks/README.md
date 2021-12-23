@@ -59,6 +59,8 @@ Explanation: The placements are [1st, 5th, 3rd, 2nd, 4th].
 
 ### Solution 1:
 
+
+
 ```c++
 class Solution {
 public:
