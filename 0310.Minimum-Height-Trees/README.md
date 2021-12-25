@@ -1,3 +1,5 @@
+
+
 # [310. Minimum Height Trees](https://leetcode-cn.com/problems/minimum-height-trees/)
 
 ## 题目
@@ -70,7 +72,7 @@ Output: [0,1]
 
 ## 解题思路
 
-可以想到这道题目会与求最短路径有关，所以可以向BFS 方向思考，如何去解决。
+可以想到这道题目会与求最短路径有关，所以可以向BFS 方向思考，如何去解决。这道题可以参考这篇题解：https://leetcode-cn.com/problems/minimum-height-trees/solution/c-xun-xu-jian-jin-de-si-lu-bfsdfstuo-bu-hmk2y/
 
 ### Solution 1: BFS（TLE）
 
@@ -80,69 +82,196 @@ Output: [0,1]
 class Solution {
 public:
     vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
-        // 建图，使用邻接列表
+        // 建图
         vector<vector<int>> adj_list(n);
         for (const auto& edge : edges) {
-            int point1 = edge.front();
-            int point2 = edge.back();
+            int point1 = edge[0];
+            int point2 = edge[1];
             adj_list[point1].push_back(point2);
             adj_list[point2].push_back(point1);
         }
         
-        vector<int> ans; // 答案的集合
-        int min_depth = 10000; // 最小深度
+        vector<int> res;
+        int min_depth = 10000; // 极端情况，退化为链表
         for (int i = 0; i < n; ++i) {
-            // 从每一个点开始 BFS
             int depth = BFS(adj_list, i);
-            // 更新结果集合
+            
             if (depth > min_depth) {
                 continue;
             } else if (depth == min_depth) {
-                ans.push_back(i);
+                res.push_back(i);
             } else {
-                ans.clear();
-                ans.push_back(i);
+                res.clear();
                 min_depth = depth;
+                res.push_back(i);
             }
         }
-        
-        return ans;
+        return res;
     }
     
  private:
-    int BFS(const vector<vector<int>>& graph, int start) {
-        // 判断是否越界
+    int BFS(const vector<vector<int>> graph, int start) {
         const int size = graph.size();
         if (start >= size) {
             return -1;
         }
         
-        vector<bool> visited(size, false); // 做记录
-        queue<int> que;
+        vector<bool> visited(size, false); // 标记数组
+        queue<int> que; // 队列
         que.push(start);
-        visited[start] = true; // 这里入队就做记录
-        int depth = 0;
+        visited[start] = true;
         
+        int depth = 0;
         while (!que.empty()) {
             ++depth;
-            
-            // 每次遍历一层
             const int len = que.size();
+            // 遍历一层
             for (int i = 0; i < len; ++i) {
                 int cur = que.front();
                 que.pop();
-                
                 for (int point : graph[cur]) {
-                    if (visited[point]) {
-                        continue;
+                    if (!visited[point]) {
+                        // 入队就做标记
+                        que.push(point);
+                        visited[point] = true;
                     }
-                    visited[point] = true;
-                    que.push(point);
-                    
                 }
             }
         }
+        
         return depth;
+    }
+};
+````
+
+### Solution 2: DFS + cache(TLE)
+
+这种解法利用 DFS  + 缓存，但是依旧会超时
+
+```c++
+class Solution {
+public:
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+        // 建图
+        vector<vector<int>> adj_list(n);
+        for (const auto& edge : edges) {
+            int point1 = edge[0];
+            int point2 = edge[1];
+            adj_list[point1].push_back(point2);
+            adj_list[point2].push_back(point1);
+        }
+        
+        vector<int> res;
+        int min_depth = 10000; // 极端情况，退化为链表
+        for (int i = 0; i < n; ++i) {
+            int depth = DFS(adj_list, i, -1);
+            
+            if (depth > min_depth) {
+                continue;
+            } else if (depth == min_depth) {
+                res.push_back(i);
+            } else {
+                res.clear();
+                min_depth = depth;
+                res.push_back(i);
+            }
+        }
+        return res;
+    }
+    
+ private:
+    // cache
+    // key start * 1e5 + root
+    // value max_deptha
+    unordered_map<int, int> cache_;
+    
+    int DFS(const vector<vector<int>>& graph, int start, int root) {
+        int key = start * 1e5 + root;
+        if (cache_.find(key) != cache_.end()) {
+            return cache_.at(key);
+        }
+        
+        int ret = 0;
+        for (int point : graph[start]) {
+            if (point == root) {
+                continue;
+            }
+            ret = max(ret, DFS(graph, point, start));
+        }
+        cache_[key] = ret + 1;
+        return ret + 1;
+    }
+};
+```
+
+### Solution 3:
+
+这种解法也可以在看下这篇题解：https://leetcode-cn.com/problems/minimum-height-trees/solution/bfs-liang-duan-shao-xiang-qiu-zhong-dian-5mol/
+
+关键就是出度越大，以此为根结点的数组的高度越小，越能留到后面
+
+````c++
+class Solution {
+public:
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+        if (n == 1) {
+            // 边界情况
+            return vector<int>({0});
+        }
+        
+        // 构建邻接表和入度数组
+        vector<vector<int>> adj_lists(n);
+        vector<int> degrees(n, 0);
+        for (const auto& edge : edges) {
+            int point1 = edge[0];
+            int point2 = edge[1];
+            adj_lists[point1].push_back(point2);
+            adj_lists[point2].push_back(point1);
+            
+            ++degrees[point1];
+            ++degrees[point2];
+        }
+        
+        queue<int> que;
+        for (int i = 0; i < n; ++i) {
+            if (degrees[i] == 1) {
+                que.push(i);
+            }
+        }
+        
+        while (!que.empty()) {
+            const int size = que.size();
+            if (size == n) {
+                break;
+            }
+            n -= size;
+            
+            for (int i = 0; i < size; ++i) {
+                int cur = que.front();
+                que.pop();
+                
+                int adj;
+                for (int point : adj_lists[cur]) {
+                    adj = point;
+                    if (degrees[adj] > 1) {
+                        break;
+                    }
+                }
+                --degrees[adj];
+                
+                if (degrees[adj] == 1) {
+                    que.push(adj);
+                }
+            }
+        }
+        
+        vector<int> res;
+        while (!que.empty()) {
+            res.push_back(que.front());
+            que.pop();
+        }
+        
+        return res;
     }
 };
 ````
