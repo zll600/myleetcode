@@ -90,7 +90,7 @@ public:
 
 这种解法可以参考这篇题解：https://leetcode-cn.com/problems/palindrome-pairs/solution/java-trie-yi-yu-li-jie-by-copyreadmachine/
 
-这里利用前缀树来做匹配，这里其实也是空间换时间的思想
+这里利用前缀树来做匹配，这里其实也是空间换时间的思想，这里关键要理解的是前缀树是其实也是可以灵活多变的，根据不同的用途，设计成为不同的结构，可以解决不同的问题
 
 ````c++
 // 前缀树节点
