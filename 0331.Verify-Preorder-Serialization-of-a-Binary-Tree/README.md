@@ -54,10 +54,121 @@ Output: false
 
 ## 解题思路
 
+这道题目可以参考这篇题解：https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/solution/pai-an-jiao-jue-de-liang-chong-jie-fa-zh-66nt/
 
 
-### Solution 1:
+
+### Solution 1: 入度和出度
+
+这里利用二叉树的入度之和等于出度之和的特点，
 
 ````c++
+class Solution {
+public:
+    bool isValidSerialization(string preorder) {
+        vector<string> tokens;
+        Split(preorder, tokens, ",");
+        // 根结点没有入度，所以这里 初始化为 1
+        int diff = 1; // diff = 出度 - 入度
+        for (const auto& token : tokens) {
+            --diff; // 递减入度
+            if (diff < 0) {
+                // 遍历的过程中 diff 应该始终大于等于 0
+                return false;
+            }
+            
+            if (token != "#") {
+                // 增加出度
+                diff += 2;
+            }
+        }
+        
+        return diff == 0; // 二叉树的入度之和等于出度
+    }
+    
+ private:
+    void Split(const string& str, vector<string>& tokens, 
+           const string delim = " ") {
+        tokens.clear();
+    
+        auto start = str.find_first_not_of(delim, 0);       // 分割到的字符串的第一个字符
+        auto position = str.find_first_of(delim, start);    // 分隔符的位置
+        while (position != string::npos || start != string::npos) {
+            // [start, position) 为分割下来的字符串
+            tokens.emplace_back(move(str.substr(start, position - start)));
+            start = str.find_first_not_of(delim, position);
+            position = str.find_first_of(delim, start);
+        }
+    }
+};
+````
+
+### Solution 2: Stack
+
+这种解法利用栈的「自底向上」的特性来完成，
+
+````c++
+class Solution {
+public:
+    bool isValidSerialization(string preorder) {
+        vector<string> tokens;
+        Split(preorder, tokens, ",");
+        vector<string> sta;
+        const int len = tokens.size();
+        for (const auto& token : tokens) {
+            sta.push_back(token);
+            while (sta.size() >= 3
+                   && *sta.crbegin() == "#"
+                   && *(sta.crbegin() + 1) == "#"
+                   && *(sta.crbegin() + 2) != "#") {
+                sta.pop_back();
+                sta.pop_back();
+                sta.pop_back();
+                sta.push_back("#");
+            }
+        }
+        
+        return sta.size() == 1 && sta.back() == "#";
+    }
+    
+ private:
+    void Split(const string& str, vector<string>& tokens, 
+           const string delim = " ") {
+        tokens.clear();
+    
+        auto start = str.find_first_not_of(delim, 0);       // 分割到的字符串的第一个字符
+        auto position = str.find_first_of(delim, start);    // 分隔符的位置
+        while (position != string::npos || start != string::npos) {
+            // [start, position) 为分割下来的字符串
+            tokens.emplace_back(move(str.substr(start, position - start)));
+            start = str.find_first_not_of(delim, position);
+            position = str.find_first_of(delim, start);
+        }
+    }
+};
+````
+
+
+
+
+
+这道题目也可以学习一个c++分割字符串的新方法：
+
+这种方法 可以参考这里：https://www.zhihu.com/question/36642771/answer/865135551
+
+````c++
+void Split(const string& str, vector<string>& tokens, 
+           const string delim = " ") {
+        tokens.clear();
+    
+        auto start = str.find_first_not_of(delim, 0);       // 分割到的字符串的第一个字符
+        auto position = str.find_first_of(delim, start);    // 分隔符的位置
+        while (position != string::npos || start != string::npos) {
+            // [start, position) 为分割下来的字符串
+            tokens.emplace_back(move(str.substr(start, position - start)));
+            start = str.find_first_not_of(delim, position);
+            position = str.find_first_of(delim, start);
+        }
+    }
 ````
 
