@@ -182,3 +182,177 @@ public:
 };
 ````
 
+### Solution 3:
+
+上面的方法最终还是会超时，字典树起到的作用就是加速字符串的比较，
+
+如果字符串 word1 + word2 能构成一个回文串，把 word1 分成 **前半段** 和 **后半段** 两部分，可以有以下以下两种拼接情况：
+
+1. word2 拼接在前，并且 **前半段** 是回文串、**后半段** 是 word2 的逆序；
+2. word2 拼接在后，并且 **后半段** 是回文串、**前半段** 是 word2 的逆序；
+
+不过依旧超时，暂时放弃了
+
+```c++
+class TrieNode {
+ public:
+    TrieNode() : is_end_(false), index_(-1), children_(vector<TrieNode*>(26, nullptr)) {
+    }
+    ~TrieNode() {
+        for (TrieNode* child : children_) {
+            if (child != nullptr) {
+                delete child;
+                child = nullptr;
+            }
+        }
+    }
+    
+    int Index() {
+        return index_;
+    }
+    void SetIndex(int idx) {
+        index_ = idx;
+    }
+    bool IsEnd() {
+        return is_end_;
+    }
+    void SetIsEnd() {
+        is_end_ = true;
+    }
+    
+    // 插入单个字符
+    TrieNode* InsertTrieNode(char c) {
+        if (!isalpha(c)) {
+            return nullptr;
+        }
+        int idx= c - 'a';
+        if (children_[idx] == nullptr) {
+            children_[idx] = new TrieNode();
+        }
+        return children_[idx];
+    }
+    
+    // 查找单个字符
+    TrieNode* GetTrieNode(char c) {
+        if (!isalpha(c)) {
+            return nullptr;
+        }
+        int idx = c - 'a';
+        return children_[idx];
+    }
+
+ private:
+    bool is_end_; // 单词结束标记
+    int index_; // 单词序号
+    vector<TrieNode*> children_; // 子节点
+};
+
+class Trie {
+ public:
+    Trie() : root_(new TrieNode()) {}
+    ~Trie() { delete root_; }
+    
+    // 插入一个单词
+    void Insert(const string& word, int idx) {
+        TrieNode *cur = root_;
+        for (char c : word) {
+            cur = cur->InsertTrieNode(c);
+        }
+        cur->SetIndex(idx);
+        cur->SetIsEnd();
+    }
+    
+    // 查找一个单词
+    TrieNode* GetNode(const string& word) {
+        TrieNode *cur = root_;
+        for (char c : word) {
+            cur = cur->GetTrieNode(c);
+            if (cur == nullptr) {
+                return nullptr;
+            }
+        }
+        return cur;
+    }
+    
+    // 查找单词并设置下标
+    bool Search(const string& word, int& idx) {
+        TrieNode *cur = GetNode(word);
+        if (cur != nullptr) {
+            idx = cur->Index();
+            return cur->IsEnd();
+        }
+        return false;
+    }
+
+ private:
+    TrieNode *root_;
+};
+
+class Solution {
+public:
+    vector<vector<int>> palindromePairs(vector<string>& words) {
+        vector<vector<int>> res; // 结果集
+        Trie *trie = new Trie();
+        
+        const int len = words.size();
+        // 将所有单词插入字典树中
+        for (int i = 0; i < len; ++i) {
+            trie->Insert(words[i], i);
+        }
+        
+        for (int i = 0; i < len; ++i) {
+            const int length = words[i].size();
+            // cout << words[i] << "----";
+            for (int j = 0; j < length; ++j) {
+                if (IsPalindrome(words[i], 0, j)) {
+                    // 如果前半段[0, j]是回文，
+                    // 则如果后半段[j.+ 1, length - 1]的逆序存在于字典树中，就可以组成回文对，或者后半段为空，
+                    string tmp = move(words[i].substr(j + 1));
+                    // cout << tmp << "----";
+                    reverse(tmp.begin(), tmp.end());
+                    int index = -1;
+                    if (trie->Search(tmp, index)) {
+                        if (i != index) {
+                            // 如果后半段的逆序存在于字典树中
+                            res.push_back(vector<int>{index, i});
+                            if (tmp == "") {
+                                res.push_back(vector<int>{i, index});
+                            }
+                        }
+                    }
+                }
+                if (IsPalindrome(words[i], j + 1, length - 1)) {
+                    // 如果后半段[j + 1, length - 1]是回文
+                    string tmp = move(words[i].substr(0, j + 1));
+                    // cout << tmp << "---";
+                    reverse(tmp.begin(), tmp.end());
+                    int index = -1;
+                    if (trie->Search(tmp, index)) {
+                        // 如果存在前半段[0, j]的逆序，就可以组成回文对
+                        if (i != index) {
+                            res.push_back(vector<int>{i, index});
+                        }
+                    }
+                }
+            }
+            // cout << endl;
+        }
+        
+        return res;
+    }
+    
+ private:
+    bool IsPalindrome(const string& word, int left, int right) {
+        while (left <= right) {
+            if (word[left] != word[right]) {
+                return false;
+            }
+            ++left;
+            --right;
+        }
+        
+        return true;
+    }
+};
+```
+
