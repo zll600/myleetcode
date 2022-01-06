@@ -64,3 +64,58 @@ Explanation: There are no expressions that can be created from "3456237490" to e
 
 ## 解题思路
 
+首先可以发现，这道题目是可以使用回溯来做的，每两个字符之间的关系有四种：加、减、✖️、“”，另外，这个数的范围存在负数，所以这里也需要注意对符号的处理，
+
+这里重要的是切分出不同长度的数，并进行不同的运算，
+
+### Solution 1:DFS
+
+这种解法，可以参考这篇题解：https://leetcode-cn.com/problems/expression-add-operators/solution/gong-shui-san-xie-hui-su-suan-fa-yun-yon-nl9z/
+
+```c++
+class Solution {
+public:
+    vector<string> addOperators(string num, int target) {
+        DFS(target, num, 0, 0L, 0L, "");
+        return res_;
+    }
+    
+ private:
+    vector<string> res_;
+    
+    void DFS(int target, const string& num, int idx, long prev, long cur, string path) {
+        if (idx == num.size()) {
+            if (target == cur) {
+                res_.push_back(path);
+            }
+            return;
+        }
+        
+        const int len = num.size();
+        for (int i = idx; i < len; ++i) {
+            if (i != idx && num[idx] == '0') {
+                // 这里是为了处理前导 0
+                continue;
+            }
+            long next = stol(num.substr(idx, i - idx + 1)); //  切分出要使用的数字
+            // 进行递归
+            if (idx == 0) {
+                // 特殊处理
+                DFS(target, num, i + 1, next, next, "" + to_string(next));
+            } else {
+                DFS(target, num, i + 1, next, cur + next, path + '+' + to_string(next)); // 加法
+                DFS(target, num, i + 1, -1 * next, cur - next, path + '-' + to_string(next)); // 减法
+                long tmp = prev * next;
+                DFS(target, num, i + 1, tmp, cur - prev + tmp, path + '*' + to_string(next)); // 乘法
+            }
+        }
+    }
+};
+```
+
+
+
+
+
+
+
