@@ -226,7 +226,7 @@ https://mp.weixin.qq.com/s?__biz=MzU4NDE3MTEyMA==&mid=2247489400&idx=1&sn=0b629d
 
 # 数据结构 (Datastructure)
 
-* 第 355 题
+* 第 355 题、第 380 题
 
 # 一些奇怪的题目
 
