@@ -217,7 +217,7 @@ https://mp.weixin.qq.com/s?__biz=MzU4NDE3MTEyMA==&mid=2247489400&idx=1&sn=0b629d
 
 * 排列组合：第 357 题
 
-* 等差数列：第 390 题
+* 等差数列：第 390 题、第 396 题
 
   
 # 字符串（String）
