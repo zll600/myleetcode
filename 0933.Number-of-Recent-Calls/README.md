@@ -51,15 +51,13 @@ recentCounter.ping(3002);  // requests = [1, 100, 3001, 3002], range is [2,3002]
 
 
 
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/number-of-recent-calls
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
-
 ## 解题思路
 
 这里可以发现，数据是满足先入先出的，所以可以考虑用队列来做
 
-### Solution 1:
+### Solution 1: 队列
+
+这种解法使用队列先进先出的特性，维护队列中数据的有效性，直接返回队列的大小即可
 
 ```c++
 class RecentCounter {
@@ -87,4 +85,42 @@ public:
  * int param_1 = obj->ping(t);
  */
 ```
+
+### Solution 2: Binary Search
+
+这里提供的数据显然是有序的，在有序的区间上进行查找，可以使用二分查找，在有序的区间中国呢找到第一个 **小于3000**  的数
+
+````c++
+class RecentCounter {
+public:
+    RecentCounter() {
+    }
+    
+    int ping(int t) {
+        data_.push_back(t);
+        int left = 0;
+        int right = data_.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (data_[mid] >= t - 3000) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return data_.size() - left;
+    }
+ 
+ private:
+    vector<int> data_;
+};
+
+/**
+ * Your RecentCounter object will be instantiated and called as such:
+ * RecentCounter* obj = new RecentCounter();
+ * int param_1 = obj->ping(t);
+ */
+````
+
+
 
