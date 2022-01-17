@@ -49,7 +49,7 @@ solution.pick(3); // It should return either index 2, 3, or 4 randomly. Each ind
 
 ### Solution 1: map
 
-最直白的解法，使用空间换时间，
+最直白的解法，使用空间换时间，这里注意随机数引擎需要在构造函数中进行初始化
 
 ````c++
 class Solution {
@@ -81,8 +81,84 @@ public:
 
 
 
-### Solution 2:
+### Solution 2: 蓄水池抽样
+
+这种解法可以参考这篇题解：
+
+https://leetcode-cn.com/problems/random-pick-index/solution/zhong-gui-zhong-ju-xu-shui-chi-chou-yang-random-re/
 
 ````c++
+class Solution {
+public:
+    Solution(vector<int>& nums) {
+        data_ = nums;
+    }
+    
+    int pick(int target) {
+        int cnt = 0;
+        int idx = -1;
+        const int len = data_.size();
+        for (int i = 0; i < len; ++i) {
+            if (data_[i] == target) {
+                ++cnt; // 统计 target 的数目
+                uniform_int_distribution<int> rand;
+                if (rand(engine_) % cnt == 0) {
+                    idx = i;
+                }
+            }
+        }
+        return idx;
+    }
+
+ private:
+    vector<int> data_; // 存储数组
+    default_random_engine engine_; // 随机数引擎
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(nums);
+ * int param_1 = obj->pick(target);
+ */
+````
+
+### Solution 3:
+
+这种解法使用了 迭代器来节省空间，但是我不是很认可这种方法，所以我更推荐上面的解法
+
+````c++
+class Solution {
+public:
+    Solution(vector<int>& nums) {
+        first_ = nums.begin();
+        last_ = nums.end();
+    }
+    
+    int pick(int target) {
+        int idx = -1;
+        int cnt = 0;
+        for (auto iter = first_; iter != last_; ++iter) {
+            if (*iter == target) {
+                ++cnt;
+                uniform_int_distribution rand;
+                if (rand(engine_) % cnt == 0) {
+                    idx = iter - first_;
+                }
+            }
+        }
+        return idx;
+    }
+
+ private:
+    vector<int>::iterator first_;
+    vector<int>::iterator last_;
+    default_random_engine engine_;
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(nums);
+ * int param_1 = obj->pick(target);
+ */
 ````
 
