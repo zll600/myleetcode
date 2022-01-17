@@ -190,7 +190,7 @@ https://mp.weixin.qq.com/s?__biz=MzU4NDE3MTEyMA==&mid=2247489400&idx=1&sn=0b629d
   将第 n 位至第 0 位(含)清零，x & (~((1 << (n + 1)) - 1)）
   ```
 
-  
+* 十进制相关的位操作：第 400 题
 
 # 贪心算法（Greedy）
 
