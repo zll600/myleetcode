@@ -250,4 +250,5 @@ https://mp.weixin.qq.com/s?__biz=MzU4NDE3MTEyMA==&mid=2247489400&idx=1&sn=0b629d
 
 * 洗牌算法：第 384 题
 * 蓄水池算法：第 382 题
+* 找规律：第 423 题
 
