@@ -49,12 +49,18 @@ Output: 16
 
 滑动窗口的核心在于确定左右边界更新的条件。
 
+这种解法可以参考这篇题解：https://leetcode-cn.com/problems/count-number-of-nice-subarrays/solution/hua-dong-chuang-kou-qian-zhui-he-bi-xu-miao-dong-b/
+
+
+
 ### Solution 1: Sliding Window
 
 这种解法使用滑动窗口来做，关键在于
 
 * 确定窗口扩大和收缩的条件
 * 计数时，根据窗口的含义，确定窗口两端的 偶数的个数来计算
+
+时间复杂度 O(n) 空间复杂度 O(n)
 
 ```c++
 class Solution {
@@ -99,8 +105,32 @@ public:
 };
 ```
 
-### Solution 2:
+### Solution 2: PrefiixSum 
+
+这种解法使用前缀和来做统计
 
 ````c++
+class Solution {
+public:
+    int numberOfSubarrays(vector<int>& nums, int k) {
+        const int len = nums.size();
+        // 下标表示 有多少个奇数
+        // 值表示这样的位置有多少个
+        vector<int> prefix(len + 1);
+        prefix[0] = 1;
+        
+        int res = 0, sum = 0;
+        for (int num : nums) {
+            sum += num & 1;
+            ++prefix[sum];
+            if (sum >= k) {
+                // 这里值考虑添加过的部分
+                res += prefix[sum - k];
+            }
+        }
+        
+        return res;
+    }
+};
 ````
 
