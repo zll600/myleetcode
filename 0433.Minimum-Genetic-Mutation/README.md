@@ -65,6 +65,11 @@ public:
     int minMutation(string start, string end, vector<string>& bank) {
         unordered_set<string> words(bank.begin(), bank.end());
         words.insert(start);
+      // 这里可以加一个剪枝
+      /* if (words.find(end) != words.end()) {
+      		return -1;
+      }
+      */
         queue<string>  que;
         que.push(start);
         
@@ -109,11 +114,67 @@ public:
 };
 ````
 
-### Solution 2: DFS
+### Solution 2: 双向 BFS 
 
-也可以用 DFS 来解决
+双向 BFS ，优先从小的集合开始 遍历，两个集合一旦出现交集，就停止遍历
 
 ````c++
+class Solution {
+public:
+    int minMutation(string start, string end, vector<string>& bank) {
+        unordered_set<string> words(bank.begin(), bank.end());
+        if (words.find(end) == words.end())  {
+            return -1;
+        }
+        unordered_set<string> st;
+        st.insert(start);
+        unordered_set<string> ed;
+        ed.insert(end);
+       
+        return BFS(st, ed, words, 0);
+    }
+ 
+ private:
+    vector<char> mode_ = {
+        'A', 'C', 'G', 'T'
+    };
+    int BFS(unordered_set<string>& st, unordered_set<string>& ed,
+            unordered_set<string> words, int depth) {
+        if (st.empty()) {
+            return -1;
+        }
+        if (st.size() > ed.size()) {
+            // 从小的一端开始
+            return BFS(ed, st, words, depth);
+        }
+        
+        unordered_set<string> next;
+        for (string start : st) {
+            for (int i = 0; i < 4; ++i) {
+                for (int j = 0; j < 8; ++j) {
+                    if (start[j] == mode_[i]) {
+                        continue;
+                    }
+                    char src = start[j];
+                    start[j] = mode_[i];
+                    
+                    if (ed.find(start) != ed.end()) {
+                        // 如果产生交集，直接返回
+                        return depth + 1;
+                    }
+                    
+                    if (words.find(start) != words.end()) {
+                        // 如果可以继续做转化，
+                        next.insert(start);
+                    }
+                    start[j] = src;
+                }
+            }
+        }
+        
+        return BFS(next, ed, words, depth + 1);
+    }
+};
 ````
 
 
