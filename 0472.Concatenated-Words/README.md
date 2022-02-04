@@ -233,5 +233,77 @@ public:
 
 ````
 
-### Solution 3:
+### Solution 3: DP
+
+上述两种的做法也是状态转移，就是当前字符串，在当前位置之后的子串能否由已经遍历过的单词构成，
+
+这种解法可以参考这篇 [题解](https://leetcode-cn.com/problems/concatenated-words/solution/gong-shui-san-xie-xu-lie-dpzi-fu-chuan-h-p7no/)
+
+这里使用 哈希 来做预处理来降低匹配字符串时的时间复杂度，可以好好看看上面的题解，这道题理解起来还是有一定难度的，
+
+
+- 状态定义：dp[i] 表示 word 的前 i 个字符，能切分出来的最大的 item 数
+
+````c++
+class Solution {
+public:
+    vector<string> findAllConcatenatedWordsInADict(vector<string>& words) {
+        for (const string& word : words) {
+            // 这里避免逸出
+            unsigned long long hash = 0;
+            
+            // 对每个字符串进行预哈希
+            for (char c : word) {
+                hash = hash * kP + (c - 'a') + kOffset;
+            }
+            memo_.insert(hash);
+        }
+        
+        vector<string> ans;
+        for (const string& word : words) {
+            if (Check(word)) {
+                ans.push_back(word);
+            }
+        }
+        return ans;
+    }
+    
+ private:
+    const int kP = 131;
+    const int kOffset = 128;
+    unordered_set<unsigned long long> memo_;
+    
+    bool Check(const string& word) {
+        const int len = word.size();
+        // 默认初始化为 -1，
+        // 定义 dp[i]f[i] 为考虑 word 的前 i 个字符（令下标从 1 开始），能够切分出的最大 item 数的个数
+        vector<int> dp(len + 1, -1);
+        
+        dp[0] = 0;
+        for (int i = 0; i <= len; ++i) {
+            if (dp[i] == -1) {
+                // 跳过无效的
+                continue;
+            }
+            
+            unsigned long long cur = 0;
+            for (int j = i + 1; j <= len; ++j) {
+                // 从 i 位置开始的单词
+                cur = cur * kP + (word[j - 1] - 'a') + kOffset;
+                if (memo_.find(cur) != memo_.end()) {
+                    // 如果存在
+                    dp[j] = max(dp[j], dp[i] + 1);
+                }
+            }
+            
+            if (dp[len] > 1) {
+                // 这里相当于一个剪枝，只要满足这个条件，就可以判定满足条件了
+                return true;
+            }
+        }
+        
+        return false;
+    }
+};
+````
 
