@@ -237,6 +237,7 @@ https://mp.weixin.qq.com/s?__biz=MzU4NDE3MTEyMA==&mid=2247489400&idx=1&sn=0b629d
 
 * 等差数列：第 390 题、第 396 题
 * 等概率分布：第 470 题、
+* 随机数：第 478 题
 
   
   
