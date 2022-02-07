@@ -122,3 +122,39 @@ public:
 };
 `````
 
+### Solution 3:
+
+这种解法是我自己写的，二分的核心在于如何确定二分的条件，并且，在二分循环的时候需要时刻维护循环不变量
+
+````c++
+class Solution {
+public:
+    int findPeakElement(vector<int>& nums) {
+        const int len = nums.size();
+        if (len == 1) {
+            return 0;
+        }
+        int low = 0, high = len;
+
+        while (low < high) {
+            const int mid = low + (high - low) / 2;
+            cout << low << "---" << mid << "---" << high << endl;
+
+            if ((mid == 0 && nums[mid] > nums[mid + 1])
+               || (mid == len - 1 && nums[mid] > nums[mid - 1])
+               || (mid > 0 && mid < len - 1
+                   && nums[mid] > nums[mid + 1] && nums[mid] > nums[mid - 1])) {
+                return mid;
+            } else if (mid > 0 && nums[mid] > nums[mid - 1]) {
+                // 这里左右边界的调整都以 mid - 1 为标志即可
+                low = mid + 1;
+            } else if (mid > 0 && nums[mid] < nums[mid - 1]) {
+                // 注意 high 不包含在内
+                high = mid;
+            }
+        }
+
+        return -1;
+    }
+};
+````
