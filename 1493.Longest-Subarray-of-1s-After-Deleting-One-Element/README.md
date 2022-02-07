@@ -95,3 +95,52 @@ public:
     }
 };
 ````
+
+### Solution 2:
+
+将上一种解法的计算过程放在预处理阶段，使用空间换时间
+
+````c++
+class Solution {
+public:
+    int longestSubarray(vector<int>& nums) {
+        const int len = nums.size();
+        
+        // 预先计算好
+        vector<int> left_to_right(len);
+        int cnt = 0;
+        for (int i = 0; i < len; ++i) {
+            if (nums[i] == 1) {
+                ++cnt;
+            } else {
+                cnt = 0;
+            }
+            left_to_right[i] = cnt;
+        }
+        
+        cnt = 0;
+        vector<int> right_to_left(len);
+        for (int i = len - 1; i >= 0; --i) {
+            if (nums[i] == 1) {
+                ++cnt;
+            } else {
+                cnt = 0;
+            }
+            right_to_left[i] = cnt;
+        }
+        
+        int res = 0;
+        for (int i = 0; i < len; ++i) {
+            if (i != 0 && i != len - 1) {
+                res = max(res, left_to_right[i - 1] + right_to_left[i + 1]);
+            } else if (i != len - 1) {
+                res = max(res, right_to_left[i + 1]);
+            } else if (i != 0) {
+                res = max(res, left_to_right[i - 1]);
+            }
+        }
+        
+        return res;
+    }
+};
+````
