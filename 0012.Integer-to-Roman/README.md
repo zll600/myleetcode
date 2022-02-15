@@ -106,7 +106,7 @@ Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 
   https://leetcode-cn.com/problems/integer-to-roman/solution/tan-xin-suan-fa-by-liweiwei1419/
 
-## 代码
+### Solution 1:
 
 `````c++
 class Solution {
@@ -130,3 +130,29 @@ public:
 };
 `````
 
+### Solution 2:
+
+这种解法和上面的差不多，但是这里将常量数组不再放在成员函数中，更合理一点
+
+````c++
+class Solution {
+public:
+    string intToRoman(int num) {
+        string ans = "";
+
+        int idx = 0;
+        while (idx < 13) {
+            while (num >= nums[idx]) {
+                ans += romans[idx];
+                num -= nums[idx];
+            }
+            ++idx;
+        }
+        return ans;
+    }
+
+ private:
+    vector<int> nums = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    vector<string> romans = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+};
+````
