@@ -30,6 +30,8 @@ Output: ["()"]
 
 ## 解题思路
 
+这道题目可以参考 [这篇题解](https://leetcode-cn.com/problems/generate-parentheses/solution/hui-su-suan-fa-by-liweiwei1419/)
+
 * 这道题初看是判断括号的有效，但仔细以下真的这样写，时间复杂度巨高，后来还是看题解吧
 * 可以DFS 和 BFS 来解决，
 
@@ -68,6 +70,7 @@ public:
 };
 `````
 
+### Solution 2: BFS
 
 
 ````c++
@@ -111,3 +114,39 @@ public:
 };
 ````
 
+### Solution 3: DFS
+
+这种写法的好处在于，不用显示来进行回溯，但是实际上回溯一直存在，
+
+````c++
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        string str = "";
+        DFS(str, n, n);
+        
+        return res_;
+    }
+    
+ private:
+    vector<string> res_;
+    
+    void DFS(const string& str, int left, int right) {
+        if (left == 0 && right == 0) {
+            res_.push_back(str);
+            return;
+        }
+        
+        if (left > right) {
+            return;
+        }
+        
+        if (left > 0) {
+            DFS(str + '(', left - 1, right);
+        }
+        if (right > left) {
+            DFS(str + ')', left, right - 1);
+        }
+    }
+};
+````
