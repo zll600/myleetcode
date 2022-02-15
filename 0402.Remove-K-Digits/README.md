@@ -48,13 +48,16 @@ Explanation: Remove all the digits from the number and it is left with nothing w
 
 这道题目有一个数学知识：对于两个数 123a456 和 123b456，如果 a > b， 那么数字 123a456 大于 数字 123b456，否则数字 123a456 小于等于数字 123b456。也就说，两个相同位数的数字大小关系取决于第一个不同的数的大小。
 
+要使整体最小的话，需要从高位开始递增，则可以使整体最小，所以可以从前向后遍历，不过在遍历的过程中需要对前导 `0` 进行特殊处理，
+
+
 ### Solution 1: Monotonic Stack
 
 可以参考这篇题解：https://leetcode-cn.com/problems/remove-duplicate-letters/solution/yi-zhao-chi-bian-li-kou-si-dao-ti-ma-ma-zai-ye-b-4/
 
 这种解法利用的是单调栈，维护一个单调递增的单调栈，让权重高的位的数的值小，整体的值就是最小
 
-```c++
+````c++
 class Solution {
 public:
     string removeKdigits(string num, int k) {
@@ -94,7 +97,7 @@ public:
         return res == "" ? "0" : res; // 如果跳过前导 0，可能会导致结果字符串为空
     }
 };
-```
+````
 
 ### Solution 2:
 
