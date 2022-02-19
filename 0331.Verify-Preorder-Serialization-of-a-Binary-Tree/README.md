@@ -62,6 +62,10 @@ Output: false
 
 这里利用二叉树的入度之和等于出度之和的特点，
 
+
+
+这里使用的 分割字符串的方法可以参考这里：https://segmentfault.com/a/1190000020863841###
+
 ````c++
 class Solution {
 public:
