@@ -1,0 +1,37 @@
+# [327. Count of Range Sum](https://leetcode.com/problems/count-of-range-sum/)
+
+Given an integer array `nums` and two integers `lower` and `upper`, return *the number of range sums that lie in* `[lower, upper]` *inclusive*.
+
+Range sum `S(i, j)` is defined as the sum of the elements in `nums` between indices `i` and `j` inclusive, where `i <= j`.
+
+ 
+
+**Example 1:**
+
+```
+Input: nums = [-2,5,-1], lower = -2, upper = 2
+Output: 3
+Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2.
+```
+
+**Example 2:**
+
+```
+Input: nums = [0], lower = 0, upper = 0
+Output: 1
+```
+
+ 
+
+**Constraints:**
+
+- `1 <= nums.length <= 105`
+- `-231 <= nums[i] <= 231 - 1`
+- `-105 <= lower <= upper <= 105`
+- The answer is **guaranteed** to fit in a **32-bit** integer.
+
+## 大意
+
+给定一个整数数组和两个整数 lower 和 upper，返回区间和在 [lower, upper] 中的区间的数目，
+
+**区间和** `S(i, j)` 表示在 `nums` 中，位置从 `i` 到 `j` 的元素之和，包含 `i` 和 `j` (`i` ≤ `j`)。
