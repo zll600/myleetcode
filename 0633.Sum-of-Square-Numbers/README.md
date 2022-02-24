@@ -34,7 +34,7 @@ Output: false
 
 ## 解题思路
 
-
+这里需要注意的是，整个搜索区间是有序的，这一点很重要
 
 ### Solution 1: Two Pointers
 
