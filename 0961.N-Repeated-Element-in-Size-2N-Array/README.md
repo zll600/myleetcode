@@ -80,3 +80,21 @@ public:
     }
 };
 ````
+### Solution 2: 一旦发现重复，就直接返回
+
+````c++
+class Solution {
+public:
+    int repeatedNTimes(vector<int>& nums) {
+        vector<int> freqs(10001, 0);
+        for (int num : nums) {
+            if (freqs[num] == 1) {
+                return num;
+            }
+            ++freqs[num];
+        }
+
+        return -1;
+    }
+};
+````
