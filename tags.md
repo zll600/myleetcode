@@ -150,7 +150,7 @@ left, right := 0, -1
 * 无限背包(Unbounded Knapsack):
     * 换硬币问题(Coin Change):
     * 其他(Other):
-* 计数DP(Counting DP):
+* 计数DP(Counting DP): 第 790 题、
 * 概率DP(Probability DP):
 * 树状DP(Tree DP):
 * 最优解问题(Optimal Solution):
@@ -162,7 +162,9 @@ left, right := 0, -1
     * 其他(Other):
 * 博弈DP(Can I Win?):
 * 区间DP(Interval DP):
-
+    * 区间合并(Intervals Merge)
+    * 三角剖分(Triangulation):
+    * 矩形分割(Rectangle Segmentation)
 
 
 
