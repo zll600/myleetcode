@@ -136,6 +136,35 @@ left, right := 0, -1
 * 第 212、第 79 题、第 152 题、第 368 题、第 372 题、第 313 题、第 354 题
 * 区间DP：第 312 题，第 486 题、第 664 题、第 546 题、第 375 题
 * 序列DP：第 472 题、第 1770 题、
+* 数塔(Number Tower): 
+* 斐波那契数列(Fibonacci Numbers)：
+    * 斐波那契数列问题(Fibonacci numbers):
+    * 爬楼梯问题(Staircase):
+    * 偷房子问题(House thief):
+* 记忆化搜索(Memory Search):
+* 0/1 背包(0/1 Knapsack): 
+    * 相等子集分割问题(Equal Subset Sum Partition): 
+    * 子集和问题(Subset Sum):
+    * 子集和的最小差问题(Minimum Subset Sum Difference):
+    * 其他(Other):
+* 无限背包(Unbounded Knapsack):
+    * 换硬币问题(Coin Change):
+    * 其他(Other):
+* 计数DP(Counting DP):
+* 概率DP(Probability DP):
+* 树状DP(Tree DP):
+* 最优解问题(Optimal Solution):
+    * 数学相关(Math):
+    * 股票买卖问题(Buy and Sell Stock):
+    * 粉刷房子问题(Paint House):
+    * 工作计划问题(Job Schedule):
+    * 最少操作次数问题(Minimum Number of Operations):
+    * 其他(Other):
+* 博弈DP(Can I Win?):
+* 区间DP(Interval DP):
+
+
+
 
 ````
 区间dp 可以参考这篇文章
