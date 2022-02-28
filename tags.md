@@ -146,7 +146,7 @@ left, right := 0, -1
     * 相等子集分割问题(Equal Subset Sum Partition): 
     * 子集和问题(Subset Sum):
     * 子集和的最小差问题(Minimum Subset Sum Difference):
-    * 其他(Other):
+    * 其他(Other): 第 956 题、
 * 无限背包(Unbounded Knapsack):
     * 换硬币问题(Coin Change):
     * 其他(Other):
