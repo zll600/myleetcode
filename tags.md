@@ -125,7 +125,7 @@ left, right := 0, -1
 * 双向BFS：第 417 题、第 433 题
 * 类似二叉树的层序遍历：第 662 题、
 
-# 动态规划（Dynamic Programming）
+# 动态规划（
 
 * 这个专题，放上一篇写的很棒的题解：https://leetcode-cn.com/circle/article/2Xxlw3/
 * 路径 DP ：62、63、64、120、931、1289、1575
@@ -150,7 +150,7 @@ left, right := 0, -1
 * 无限背包(Unbounded Knapsack):
     * 换硬币问题(Coin Change):
     * 其他(Other):
-* 计数DP(Counting DP): 第 790 题、第 935 题、
+* 计数DP(Counting DP): 第 790 题、第 935 题、第 1155 题、
 * 概率DP(Probability DP):
 * 树状DP(Tree DP):
 * 最优解问题(Optimal Solution):
