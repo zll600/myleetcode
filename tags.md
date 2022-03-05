@@ -150,7 +150,7 @@ left, right := 0, -1
 * 无限背包(Unbounded Knapsack):
     * 换硬币问题(Coin Change):
     * 其他(Other):
-* 计数DP(Counting DP): 第 790 题、第 935 题、第 1155 题、第 1641 题、
+* 计数DP(Counting DP): 第 790 题、第 935 题、第 1155 题、第 1641 题、第 1220 题、
 * 概率DP(Probability DP):
 * 树状DP(Tree DP):
 * 最优解问题(Optimal Solution):
