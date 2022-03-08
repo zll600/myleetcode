@@ -53,26 +53,27 @@ Explanation: There are 4 substrings: "10", "01", "10", "01" that have equal numb
 class Solution {
 public:
     int countBinarySubstrings(string s) {
+        // 上一种字符连续出现的次数
         int last = 0;
-        
+
         const int len = s.size();
         int res = 0;
-        for (int i = 0; i < len; ) {
-            // 注意外层循环不做遍历的
-            char c = s[i];
+        int i = 0;
+        while (i < len) {
+            // 统计当前字符出现的次数
             int cnt = 1;
-            
-            for (i++; i < len && s[i] == c; ++i) {
-                // 统计连续的相同字符的个数
+            char c = s[i];
+            for (++i; i < len && s[i] == c; ++i) {
                 ++cnt;
             }
-            
-            res += min(last, cnt); // 选择连续的 0 和 1 中最少的
+            // 这里选取最小的，就是可以形成的符合条件的子串的书目
+            // 这里加速了统计
+            // "00111" --> "0011", "01" 是两个
+            res += min(cnt, last);
             last = cnt;
         }
-        
+
         return res;
     }
 };
 ````
-
