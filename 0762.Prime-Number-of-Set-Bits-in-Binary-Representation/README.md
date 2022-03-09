@@ -98,3 +98,27 @@ public:
     }
 };
 ````
+
+### Solution 2:
+
+这种解法可以参考 [这篇题解](https://leetcode-cn.com/problems/prime-number-of-set-bits-in-binary-representation/solution/cchao-100de-jian-dan-jie-fa-by-ffreturn-pj11/)
+
+这里使用了一个内置函数来计算 1 的数目
+
+````c++
+class Solution {
+public:
+    int countPrimeSetBits(int left, int right) {
+        int res = 0;
+        for (int i = left; i <= right; ++i) {
+            res += primes[__builtin_popcount(i)];
+        }
+
+        return res;
+    }
+
+ private:
+    const vector<int> primes = {0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1};
+
+};
+````
