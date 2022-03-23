@@ -58,20 +58,22 @@ class Solution {
 public:
     vector<int> findClosestElements(vector<int>& arr, int k, int x) {
         const int len = arr.size();
-        
+
         // 这里 二分查找 整个区间的起点
         int low = 0, high = len - k;
         while (low < high) {
             const int mid = low + (high - low) / 2;
-            
+
             if (x - arr[mid] > arr[mid + k] - x) {
-                // 说明符合条件的区间在 右侧
+                // 我们要找的low 是符合条件的最大的
+                // 说明原来的 low 是不符合条件的
                 low = mid + 1;
             } else {
+                // 原来的high 是符合 条件的
                 high = mid;
             }
         }
-        
+
         return vector<int>(arr.begin() + low, arr.begin() + low + k);
     }
 };
