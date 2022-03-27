@@ -1,5 +1,7 @@
 # [1287. Element Appearing More Than 25% In Sorted Array](https://leetcode.com/problems/element-appearing-more-than-25-in-sorted-array/)
 
+## 题目
+
 Given an integer array **sorted** in non-decreasing order, there is exactly one integer in the array that occurs more than 25% of the time, return that integer.
 
  
@@ -39,7 +41,7 @@ class Solution {
 public:
     int findSpecialInteger(vector<int>& arr) {
         const int len = arr.size();
-        int target = (len + 1)/ 4;
+        int target = len / 4;
 
         int cnt = 1;
         int cur = arr[0];
@@ -63,4 +65,18 @@ public:
 };
 ````
 
+### Solution 2:
+
+
+````go
+func findSpecialInteger(arr []int) int {
+	n := len(arr)
+	for i := 0; i < n-n/4; i++ {
+		if arr[i] == arr[i+n/4] {
+			return arr[i]
+		}
+	}
+	return -1
+}
+````
 
