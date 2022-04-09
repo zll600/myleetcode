@@ -88,3 +88,51 @@ public:
 };
 ````
 
+### Solution 2: BinarySearch
+
+这里很巧妙的使用了真分数的特性，存在一个可以二分的区间 `[0, 1.0)`
+
+然后这里因为浮点数的关系，所以不能使用边界条件来终止条件，所以在这里实际上使用了 cnt 来作为递归终止的条件
+
+````c++
+class Solution {
+public:
+    vector<int> kthSmallestPrimeFraction(vector<int>& arr, int k) {
+        // 这里二分的范围是 [0.0, 1.0]
+        double low = 0.0, high = 1.0;
+
+        const int len = arr.size();
+        while (true) {
+            const double mid = (high + low) / 2;
+            int p = 0, q = 1, j = 0;
+            int cnt = 0;
+
+            for (int i = 0; i < len; ++i) {
+                // 统计大于 mid 的分数的个数
+                while (j < len && 1.0 * arr[i] > mid * arr[j]) {
+                    ++j;
+                }
+                // 统计小于 mid 的数的数目
+                cnt += len - j;
+
+                // 动态维护一个最大的分子值和分母值
+                if (j < len && q * arr[i] > p * arr[j]) {
+                    p = arr[i];
+                    q = arr[j];
+                }
+            }
+
+            if (cnt == k) {
+                // 这里就是终止二分的条件
+                return {p, q};
+            } else if (cnt < k) {
+                low = mid;
+            } else {
+                high = mid;
+            }
+        }
+
+        return {};
+    }
+};
+````
