@@ -104,3 +104,73 @@ public:
     }
 };
 ````
+
+### Solution 2: DFS + Cache
+
+这里加上缓存，可以降低时间复杂度
+
+````c++
+class Solution {
+public:
+    int numFactoredBinaryTrees(vector<int>& arr) {
+        // 先排序
+        sort(arr.begin(), arr.end());
+        // 存入一个集合中，方便查找
+        unordered_set<int> arr_set(arr.begin(), arr.end());
+        
+        const int len = arr.size();
+        unordered_map<int, vector<pair<int, int>>> dict;
+        for (int i = 0; i < len; ++i) {
+            // 这里起点从 i 开始，每个数最多使用两次
+            for (int j = i; j < len && 1LL * arr[i] * arr[j] <= arr.back(); ++j) {
+                // 构造一个 key
+                int key = arr[i] * arr[j];
+                // 如果不存在，跳过
+                if (arr_set.find(key) == arr_set.end()) {
+                    continue;
+                }
+                
+                dict[key].push_back({arr[i], arr[j]});
+            }
+        }
+        
+        unordered_map<int, int> cache;
+        int ans = 0;
+        for (int num : arr_set) {
+            ans = (ans + DFS(num, dict, cache)) % mod_;
+        }
+        return ans;
+    }
+    
+ private:
+    const int mod_ = 1e9 + 7;
+    
+    int DFS(int key, const unordered_map<int, vector<pair<int, int>>>& dict,
+           unordered_map<int, int>& cache) {
+        // 先查缓存
+        auto it = cache.find(key);
+        if (it != cache.end()) {
+            return it->second;
+        }
+        
+        // 初始化为 1，这颗树只有一个根节点的情况
+        int res = 1;
+        if (dict.find(key) != dict.end()) {
+            for (const pair<int,int>& item : dict.at(key)) {
+                int x = DFS(item.first, dict, cache);
+                int y = DFS(item.second, dict, cache);
+            
+                long long tmp = 1LL * x * y;
+                // 这里注意，如果左右孩子不相等，则交换之后可以形成新树
+                if (item.first != item.second) {
+                    tmp *= 2;
+                }
+                res = (res + tmp) % mod_;
+            }
+        }
+        // 设计缓存
+        cache[key] = res;
+        return res;
+    }
+};
+````
