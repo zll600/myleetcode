@@ -174,3 +174,44 @@ public:
     }
 };
 ````
+### Solution 3: DP
+
+`dp[i]` 表示以 `arr[i]` 为根节点的树的数目，
+
+状态转移方程: `dp[i] += dp[k] * dp[j] && j * k == i`
+
+初始化所有数为 10
+
+````c++
+class Solution {
+public:
+    int numFactoredBinaryTrees(vector<int>& arr) {
+        // 先排序
+        sort(arr.begin(), arr.end());
+        const int len = arr.size();
+        // dp[i] 表示以 arr[i] 为根节点的树的数目
+        unordered_map<int, int> dp;
+        for (int i = 0; i < len; ++i) {
+            // 状态转移
+            for (int j = 0; j < i; ++j) {
+                int quotient = arr[i] / arr[j];
+                int remainder = arr[i] % arr[j];
+                if (remainder == 0) {
+                    dp[arr[i]] = (dp[arr[i]] + 1L * dp[quotient] * dp[arr[j]]) % mod_;
+                }
+            }
+            // 这里相当于初始化
+            ++dp[arr[i]];
+        }
+
+        int res = 0;
+        for_each(dp.begin(), dp.end(), [&](const pair<int, int>& elem){
+            res = (1L * res + elem.second) % mod_;
+        });
+        return res;
+    }
+
+ private:
+    const int mod_ = 1e9 + 7;
+};
+````
