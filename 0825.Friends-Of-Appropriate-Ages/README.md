@@ -66,9 +66,11 @@ Explanation: Friend requests are made 110 -> 100, 120 -> 110, 120 -> 100.
 
 ## 解题思路
 
+这到题目可以参考 [这篇题解](https://books.halfrost.com/leetcode/ChapterFour/0800~0899/0825.Friends-Of-Appropriate-Ages/)
 
 ### Solution 1: Bruce Force(TLE)
 
+暴力解法，枚举所有的可能，然后累加结果即可
 
 ````c++
 class Solution {
@@ -107,6 +109,49 @@ public:
         return ages[y] <= ages[x] / 2 + 7
             || ages[y] > ages[x]
             || ages[y] > 100 && ages[x] < 100;
+    }
+};
+````
+
+### Solution 2: Sort + Two Pointers
+
+将题目条件整理一下可以得到 `ages[x] / 2 + 7 < ages[y] <= ages[x]` 这个区间内是可以发送请求的，
+
+所以我们主要对每个位置，维护这个区间就可以了，这里可以采用双指针的做法
+
+````c++
+class Solution {
+public:
+    int numFriendRequests(vector<int>& ages) {
+        const int len = ages.size();
+        sort(ages.begin(), ages.end());
+
+        // [left, right] 维护一个合法的区间
+        int left = 0, right = 0;
+        int res = 0;
+        for (int i = 0; i < len; ++i) {
+            if (ages[i] < 15) {
+                continue;
+            }
+
+            // 左指针右移
+            while (2 * ages[left] <= ages[i] + 14) {
+                ++left;
+            }
+            // 右指针右移
+            while (right + 1 < len && ages[right + 1] <= ages[i]) {
+                ++right;
+            }
+            res += right - left;
+        }
+        return res;
+    }
+
+ private:
+    bool Check(int x, int y) {
+        return y <= x / 2 + 7
+            || y > x
+            || y > 100 && x < 100;
     }
 };
 ````
