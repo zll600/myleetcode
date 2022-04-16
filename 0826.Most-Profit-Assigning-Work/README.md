@@ -55,11 +55,13 @@ Output: 0
 
 ## 解题思路
 
+这道题目的难点在于按照 difficuity 或者 profit 单独来排序都是不可行的，是无法做到降低时间复杂度的，所以难点在于要同时兼顾二者才可以
+
 ### Solution 1: Sliding Window
 
 这种解法可以参考 [这篇题解](https://books.halfrost.com/leetcode/ChapterFour/0800~0899/0826.Most-Profit-Assigning-Work/)
 
-这里我们将 worker按照能力升序排序，job 先按照难度升序排序，然后 tasks 在跟新每个位置所有能获得的最大收益，
+这里我们将 worker按照能力升序排序，job 先按照难度升序排序，然后 tasks 更新到 i 位置为止所有能获得的最大收益，
 
 ````c++
 class Solution {
