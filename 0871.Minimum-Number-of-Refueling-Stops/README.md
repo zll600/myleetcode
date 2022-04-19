@@ -101,5 +101,51 @@ public:
 };
 ````
 
+### Solution 2: DP
 
+这种解法可以参考 [这篇题解](https://leetcode-cn.com/problems/minimum-number-of-refueling-stops/solution/bang-ni-kan-dong-guan-jie-de-dong-tai-gu-8oyf/)
+
+这里的状态转移和初始化都可以参考上面的 DFS 来写，会比较好想一点
+
+````c++
+class Solution {
+public:
+    int minRefuelStops(int target, int startFuel, vector<vector<int>>& stations) {
+        // 做一个剪枝判断
+        if (startFuel >= target) {
+            return 0;
+        }
+
+        const int len = stations.size();
+        // dp[i][j] 表示经过了 i 个加油站，加了 j 次油的最长行驶距离
+        vector<vector<long>> dp(len + 1, vector<long>(len + 1, 0));
+
+        // 初始化第一列
+        for (int i = 0; i <= len; ++i) {
+            dp[i][0] = startFuel;
+        }
+
+        // 状态转移
+        for (int i = 1; i <= len; ++i) {
+            for (int j = 1; j <= i; ++j) {
+                if (dp[i - 1][j] >= stations[i - 1][0]) {
+                    dp[i][j] = dp[i - 1][j];
+                }
+
+                if (dp[i - 1][j - 1] >= stations[i - 1][0]) {
+                    dp[i][j] = max(dp[i][j], dp[i - 1][j - 1] + stations[i - 1][1]);
+                }
+            }
+        }
+
+        for (int j = 0; j <= len; ++j) {
+            if (dp[len][j] >= target) {
+                return j;
+            }
+        }
+
+        return -1;
+    }
+};
+````
 
