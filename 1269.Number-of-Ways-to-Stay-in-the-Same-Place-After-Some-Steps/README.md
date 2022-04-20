@@ -56,7 +56,11 @@ Output: 8
 
 这道题目要求出所有可能的方法，所以可以想到 DFS 来做，另外这里的子问题还很比较明显的，所以也可以考虑使用 dp 来做
 
+这道题目可以参考 [这篇题解](https://leetcode-cn.com/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/solution/shu-ju-jie-gou-he-suan-fa-di-gui-ge-dong-glyo/)
+
 ### Solution 1: DFS
+
+这种解法因为存在较多的重复计算会导致超时
 
 ````c++
 class Solution {
@@ -90,3 +94,80 @@ public:
     }
 };
 ````
+
+### Solution 2: DFS + Cache
+
+````c++
+class Solution {
+public:
+    int numWays(int steps, int arr_len) {
+        return DFS(steps, arr_len, 0);
+    }
+
+ private:
+    const int mod_ = 1e9 + 7;
+    // 缓存
+    unordered_map<string, int> cache_;
+
+    int DFS(int steps, int arr_len, int pos) {
+        if (steps == 0) {
+            return pos == 0 ? 1 : 0;
+        }
+
+        string key = to_string(steps) + "+" + to_string(pos);
+        auto it = cache_.find(key);
+        if (it != cache_.end()) {
+            return it->second;
+        }
+
+        long res = 0;
+
+        // left
+        if (pos > 0) {
+            res = (res + DFS(steps - 1, arr_len, pos - 1)) % mod_;
+        }
+        // right
+        if (pos < arr_len - 1) {
+            res = (res + DFS(steps - 1, arr_len, pos + 1)) % mod_;
+        }
+        // stay
+        res = (res + DFS(steps - 1, arr_len, pos)) % mod_;
+
+        cache_[key] = res;
+        return res;
+    }
+};
+```
+
+### Solutino 3: DP
+
+````c++
+class Solution {
+public:
+    int numWays(int steps, int arr_len) {
+        vector<vector<int>> dp(steps + 1, vector<int>(arr_len + 1));
+        dp[0][0] = 0;
+        dp[1][0] = 1;
+        dp[1][1] = 1;
+
+        for (int i = 1; i <= steps; ++i) {
+            for (int j = 0; j < arr_len; ++j) {
+                dp[i][j] = (dp[i][j] + dp[i - 1][j]) % mod_;
+                if (j > 0) {
+                    dp[i][j] = (dp[i][j] + dp[i - 1][j - 1]) % mod_;
+                }
+                if (j < arr_len - 1) {
+                    dp[i][j] = (dp[i][j] + dp[i - 1][j + 1]) % mod_;
+                }
+            }
+        }
+
+        return dp[steps][0];
+    }
+
+ private:
+    const int mod_ = 1e9 + 7;
+};
+```
+
+
