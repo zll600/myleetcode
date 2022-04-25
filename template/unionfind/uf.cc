@@ -22,6 +22,10 @@ class UF {
     void Union(int x, int y) {
         int root_x = Find(x);
         int root_y = Find(y);
+
+        if (root_x == root_y) {
+            return;
+        }
         
         data_[root_x] = data_[root_y];
         --cnt_;
