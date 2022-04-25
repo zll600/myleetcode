@@ -72,3 +72,32 @@ public:
     }
 };
 ````
+
+### Solution 2:
+
+这种解法如果没见过其实是不太好想的，可以自己画一画
+
+````c++
+class Solution {
+public:
+    vector<int> sortArrayByParityII(vector<int>& nums) {
+        const int len = nums.size();
+
+        int odd_idx = 1;
+        int even_idx = 0;
+
+        // 每次将最后一个位置上的值放到符合条件的位置上，最终所有元素都可以放在合理的位置上
+        while (odd_idx < len && even_idx < len) {
+            if (nums.back() % 2 == 0) {
+                swap(nums[len - 1], nums[even_idx]);
+                even_idx += 2;
+            } else {
+                swap(nums[len - 1], nums[odd_idx]);
+                odd_idx += 2;
+            }
+        }
+
+        return nums;
+    }
+};
+````
