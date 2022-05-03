@@ -83,6 +83,7 @@ public:
         
         int left_res = DFS(root->left, res);
         int right_res = DFS(root->right, res);
+        // 从下向上，传播可以转移或者需要转移的金币数
         res += abs(left_res) + abs(right_res);
         return left_res + right_res + root->val - 1;
     }
