@@ -68,3 +68,34 @@ public:
     }
 };
 ````
+
+### Solution 2: Hash
+
+这种解法可以参考 [这篇题解](https://books.halfrost.com/leetcode/ChapterFour/1000~1099/1010.Pairs-of-Songs-With-Total-Durations-Divisible-by-60/)
+
+这里利用 固定的配对 和 频数 来加速配对，可以降低时间复杂
+
+````c++\
+class Solution {
+public:
+    int numPairsDivisibleBy60(vector<int>& time) {
+        const int len = time.size();
+        vector<int> freq(60);
+        for (int num : time) {
+            ++freq[num % 60];
+        }
+
+        int res = 0;
+        for (int i = 1; i < 30; ++i) {
+            res += freq[i] * freq[60 - i];
+        }
+
+        // 0 只能和 0 配对
+        res +=  (freq[0] * 1L * (freq[0] - 1)) / 2;
+        // 30 只能和 30 配对
+        res += (freq[30] * 1L * (freq[30] - 1)) / 2;
+
+        return res;
+    }
+};
+````
