@@ -44,6 +44,8 @@ Explantion: (-2)2 = 4
 
 ## 解题思路
 
+这道题目可以参考 [这篇题解](https://leetcode.cn/problems/convert-to-base-2/solution/shu-xue-jie-shi-by-keai_ale-7lu2/) 理解一下 十进制转化为 k 进制背后的数学解释
+
 ### Solution 1:
 
 这种解法可以参考 [这篇题解](https://books.halfrost.com/leetcode/ChapterFour/1000~1099/1017.Convert-to-Base-2/)
