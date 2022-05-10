@@ -40,8 +40,34 @@ Output: "255[.]100[.]50[.]0"
 
 ### Solution 1:
 
+这种解法直接使用 go 的api 来做
+
 ````Go
 func defangIPaddr(address string) string {
     return strings.ReplaceAll(address, ".", "[.]");
 }
+````
+
+### Solution 1:
+
+这种解法使用 C++ 实现一个 replace 函数
+
+````c++
+class Solution {
+public:
+    string defangIPaddr(string address) {
+        return Replace(address, ".", "[.]");
+    }
+
+ private:
+    string Replace(string str, const string& old_str, const string& new_str) {
+        auto pos = str.find_first_of(old_str, 0);
+        while (pos != string::npos) {
+            str.replace(pos, old_str.size(), new_str);
+            pos += new_str.size();
+            pos = str.find_first_of(old_str, pos);
+        }
+        return str;
+    }
+};
 ````
