@@ -79,3 +79,48 @@ class Solution:
 
         return value - 2 if abs(target - total) >= abs(target - last) else value - 1
 ````
+
+### Solution 2: BinarySearch
+
+这种解法对比 解法一，就是在求 value 的时候用二分来替换掉枚举，将 O(n) 降低为 log(n)
+
+这里还要注意就是 python 的 除法和整除是不一样的
+
+````Python3
+class Solution:
+    def findBestValue(self, arr: List[int], target: int) -> int:
+        total = sum(arr)
+        if total <= target:
+            return max(arr)
+
+        arr_len = len(arr)
+        # 这里使用 二分来做
+        # 做边界就是数组的均值，右边界就是 min(max(arr), target)
+        left, right = target // arr_len, max(arr) if max(arr) <= target else target
+        while left < right:
+            mid = left + (right - left) // 2
+            total = 0
+
+            # 根据累加和来进行二分
+            for i in range(arr_len):
+                total += mid if arr[i] > mid else arr[i]
+
+            if total < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+
+        # 二分查找结束之后，这几个值都要尝试一下，找到最接近 target 中的最小的
+        sum_mid, sum_left, sum_right = 0, 0, 0
+        for i in range(arr_len):
+            sum_mid += left if arr[i] > left else arr[i]
+            sum_left += left - 1 if arr[i] > left - 1 else arr[i]
+            sum_right += left + 1 if arr[i] > left + 1 else arr[i]
+
+        # 这里的判断注意 等号
+        if abs(target - sum_mid) <= abs(target - sum_right):
+            return left if abs(target - sum_mid) < abs(target - sum_left) else left - 1
+
+        return left + 1
+
+````
