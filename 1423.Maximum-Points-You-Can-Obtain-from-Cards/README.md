@@ -86,3 +86,26 @@ class Solution:
         self.memo[(i, j)] = res
         return res
 ````
+
+### Solutionb 2: PrefixSum
+
+这种解法利用前缀和来计算
+
+这里其实是 逆向来考虑的，从两边取值并求最大，可以等效为从中间取值并求最小
+
+所以这里利用前缀和求出前 `i(i < k)` 个数的 和，即 `prefix_sum[i] (i <  + 1)`，这样求出中间连续的最小值，剩下的就是最大值
+
+````python3
+class Solution:
+    def maxScore(self, card_points: List[int], k: int) -> int:
+        N = len(card_points)
+        prefix_sum = [0] * (N + 1)
+        for i in range(N):
+            prefix_sum[i + 1] = prefix_sum[i] + card_points[i]
+            
+        res = float("inf")
+        for i in range(k + 1):
+            res = min(res, prefix_sum[N - k + i] - prefix_sum[i]);
+        return prefix_sum[N] - res
+        
+````
