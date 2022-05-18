@@ -109,3 +109,27 @@ class Solution:
         return prefix_sum[N] - res
         
 ````
+
+### Solution 3: Sliding Window
+
+这种解法使用滑动窗口来逆向求解，窗口中的值就是 不选的最小值
+
+- `i >= window_size` 时窗口收缩
+- `i >= window_size - 1` 时，更新最小值
+
+````python3
+class Solution:
+    def maxScore(self, card_points: List[int], k: int) -> int:
+        N = len(card_points)
+        window_size = N - k
+        sums = 0
+        res = float("inf")
+        for i in range(N):
+            sums += card_points[i]
+            if i >= window_size:
+                sums -= card_points[i - window_size]
+            if i >= window_size - 1:
+                res = min(res, sums)
+        return sum(card_points) - res
+
+````
