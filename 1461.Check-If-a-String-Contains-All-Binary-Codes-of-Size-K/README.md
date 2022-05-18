@@ -48,6 +48,8 @@ Explanation: The binary code "00" is of length 2 and does not exist in the array
 
 或者预处理得到 2^k 中长度为 k 的二进制字符串，然后进行字符串匹配
 
+这道题目可以参考 [这篇题解](https://leetcode.cn/problems/check-if-a-string-contains-all-binary-codes-of-size-k/solution/ha-xi-biao-zhong-cun-zi-fu-chuan-shi-jian-fu-za-du/)
+
 ### Solution 1:
 
 这种解法枚举 s 中所有长度为 k 的子串，然后查看其数量能否达到 2^k 个
@@ -59,6 +61,36 @@ public:
         unordered_set<string> cache;
         for (int i = 0; i + k <= s.size(); ++i) {
             cache.insert(std::move(s.substr(i, k)));
+        }
+        return cache.size() == (1 << k);
+    }
+};
+````
+
+### Solution 2: Sliding Window
+
+这里使用子串等价的整数来做 key，避免了计算哈希值的开销
+
+并使用 size 为 k 的滑动窗口来更新子串所表示的 key
+
+````c++
+class Solution {
+public:
+    bool hasAllCodes(string s, int k) {
+        if (k > s.size()) {
+            return 0;
+        }
+
+        int cur = 0;
+        for (int i = 0; i < k - 1; ++i) {
+            cur = 2 * cur + (s[i] == '1');
+        }
+
+        unordered_set<int> cache;
+        for (int i = k - 1; i < s.size(); ++i) {
+            cur = 2 * cur + (s[i] == '1');
+            cache.insert(cur);
+            cur &= ~(1 << (k - 1));
         }
         return cache.size() == (1 << k);
     }
