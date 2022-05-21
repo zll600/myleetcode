@@ -1,7 +1,7 @@
 class OurQueue:
     def __init__(self):
-        self.in_stack = []
-        self.out_stack = []
+        self.in_stack = []  # 队列尾部
+        self.out_stack = [] # 队列的头部
     
     def __len__(self):
         return len(self.in_stack) + len(self.out_stack)
@@ -10,7 +10,7 @@ class OurQueue:
         self.in_stack.append(obj)
 
     def pop(self):
-        if not self.out_stack:
+        if not self.out_stack:      # 如果队列为空
             self.out_stack = self.in_stack[::-1]
             self.in_stack = []
 
