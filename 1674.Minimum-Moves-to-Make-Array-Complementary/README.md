@@ -89,7 +89,7 @@ public:
 };
 ````
 
-### Solution 2:
+### Solution 2: 差分数组 和 哈希
 
 
 ````c++
@@ -97,20 +97,27 @@ class Solution {
 public:
     int minMoves(vector<int>& nums, int limit) {
         const int len = nums.size();
+        // 差分数组
         vector<int> d(2 * limit + 2);
+        // 记录 nums[i] + nums[n - i + 1] 的频数
         unordered_map<int, int> freq;
         for (int i = 0; i + i < len; ++i) {
             ++freq[nums[i] + nums[len - i - 1]];
+            // 更新差分数组
             ++d[1 + min(nums[i], nums[len - i - 1])];
             --d[limit + max(nums[i], nums[len - i - 1]) + 1];
         }
 
         int ans = len * 2;
+        // 0/1 贡献的数量
         int contrib01 = 0;
         for (int  k = 2; k <= 2 * limit; ++k) {
             contrib01 += d[k];
+            /// 对 0 贡献的数目
             int contrib0 = freq[k];
+            // 只贡献 1
             int contrib1 = contrib01 - contrib0;
+            // 贡献 2
             int contrib2 = len / 2 - contrib01;
             ans = min(ans, contrib1 + contrib2 * 2);
         }
