@@ -19,8 +19,9 @@ class HashTable {
     // add if key is not exist
     // update if key is exist
     void Add(HashObject *object);
-
     bool Exists(const std::string& key) const;
+    void Remove(const std::string& key);
+    std::string Get(const std::string& key) const;
 
  private:
     size_t size_;

@@ -9,6 +9,7 @@ HashTable::HashTable(size_t size) : size_(size) {
     data_ = new HashObject[size];
     assert(data_ != nullptr);
 
+    // 设定初始值
     for (size_t i = 0; i < size_; ++i) {
         data_[i].set_key(HashObject::GetNullKey());
     }
@@ -39,9 +40,12 @@ void HashTable::Add(HashObject *object) {
             found = true;
             break;
         } else if (data_[index].get_key() == HashObject::GetDummyKey()) {
+            // 记录下一个已经删除的位置，这个位置可以复用
             dummy_index = index;
         }
+        // 线性探索
         index = (index + 1) % size_;
+        // 已经遍历所有的位置
         if (index == original_index) {
             return;
         }
@@ -71,6 +75,40 @@ bool HashTable::Exists(const std::string& key) const {
         }
     }
     return found;
+}
+
+void HashTable::Remove(const std::string& key) {
+    int index = Hash(key);
+    int original_index = index;
+
+    while (data_[index].get_key() != HashObject::GetNullKey()) {
+        if (data_[index].get_key() == key) {
+            data_[index].set_key(HashObject::GetDummyKey());
+            data_[index].set_value("");
+            break;
+        }
+        index = (index + 1) % size_;
+        if (index == original_index) {
+            break;
+        }
+    }
+}
+
+std::string HashTable::Get(const std::string& key) const {
+    int index = Hash(key);
+    int original_index = index;
+
+    while (data_[index].get_key() != HashObject::GetNullKey()) {
+        if (data_[index].get_key() == key) {
+            return data_[index].get_value();
+        } 
+            
+        index = (index + 1) % size_;
+        if (index == original_index) {
+            break;
+        }
+    }
+    return "";
 }
 
 }   //  namespace walk
