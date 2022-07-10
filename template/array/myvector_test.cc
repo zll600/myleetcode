@@ -10,6 +10,12 @@ void MyVectorTest::RunTests() const {
     TestIsEmpty();
     TestCapacity();
     TestGetValueAt();
+    TestPop();
+    TestInsert();
+    TestPrepend();
+    TestDelete();
+    TestRemove();
+    TestFind();
 }
 
 void MyVectorTest::TestSize() const {
@@ -64,14 +70,64 @@ void MyVectorTest::TestGetValueAt() const {
     assert(tester[2] == 3);
 }
 
-
 void MyVectorTest::TestPop() const {
-    
+    MyVector tester{3};
+    tester.PushBack(3);
+
+    assert(tester.Back() == 3);
+    tester.PushBack(8);
+    tester.PushBack(9);
+    assert(tester.get_size() == 3);
+
+    tester.PopBack();
+    tester.PopBack();
+    assert(tester.get_size() == 1);
 }
-void MyVectorTest::TestInsert() const {}
-void MyVectorTest::TestPrepend() const {}
-void MyVectorTest::TestDelete() const {}
-void MyVectorTest::TestRemove() const {}
-void MyVectorTest::TestFind() const {}
+
+void MyVectorTest::TestInsert() const {
+    MyVector tester{3};
+    tester.PushBack(1);
+    tester.PushBack(2);
+    assert(tester.get_size() == 2);
+
+    tester.Insert(0, 3);
+    assert(tester[0] == 3);
+}
+
+void MyVectorTest::TestPrepend() const {
+    MyVector tester{3};
+    tester.PushBack(1);
+    tester.PushBack(2);
+
+    tester.Prepend(3);
+    assert(tester[0] == 3);
+}
+
+void MyVectorTest::TestDelete() const {
+    MyVector tester{4};
+    tester.PushBack(1);
+    tester.PushBack(2);
+    tester.PushBack(3);
+    tester.Delete(0);
+    assert(tester[0] == 2);
+}
+
+void MyVectorTest::TestRemove() const {
+    MyVector tester{4};
+    tester.PushBack(1);
+    tester.PushBack(2);
+    tester.PushBack(3);
+    tester.Remove(2); 
+
+    assert(tester[1] == 3);
+}
+void MyVectorTest::TestFind() const {
+    MyVector tester{4};
+    tester.PushBack(1);
+    tester.PushBack(2);
+    tester.PushBack(3);
+
+    assert(tester.Find(2) == 1);
+}
 
 }   // namespace walk

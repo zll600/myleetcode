@@ -2,7 +2,7 @@ all:
 		if [ -d "build" ]; then \
 			cmake --build ./build; \
 		else \
-			cmake -H. -Bbuild;\
+			cmake -H. -Bbuild && cmake --build ./build; \
 		fi
 
 .PHONY: clean disclean

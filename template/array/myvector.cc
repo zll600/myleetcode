@@ -146,7 +146,7 @@ void MyVector::Delete(int index) {
 
 void MyVector::Remove(int value) {
     for (int i = 0; i < size_; ++i) {
-        if (value == i) {
+        if (value == data_[i]) {
             Delete(i);
             // 删除时会做左移操作
             --i;
