@@ -115,3 +115,74 @@ int main(void) {
 }
 ````
 
+
+
+### Solution 2: Recurrence
+
+这里也可以利用dp 的思想来进行递推
+
+
+
+````c++
+#include <bits/stdc++.h>
+
+using namespace std;
+
+class Solution  {
+ public:
+    void Solve(vector<vector<int>>& data) {
+        const int len = data.size();
+        vector<vector<int>> dp(len, vector<int>(len));
+        
+        for (int j = 0; j < len; ++j) {
+            dp[len - 1][j] = data[len - 1][j];
+        }
+        for (int i = len - 2; i >= 0; --i) {
+            for (int j = 0; j <= i; ++j) {
+                dp[i][j] = max(dp[i + 1][j], dp[i + 1][j + 1]) + data[i][j];
+            }
+        }
+        
+        cout << dp[0][0] << endl;
+    }
+    
+ private:
+    
+ 
+    int DFS(const vector<vector<int>>& grid, int i, int j, vector<vector<int>>& cache) {
+        if (i == grid.size()) {
+            return 0;
+        }
+        
+        if (cache[i][j] != -1) {
+            return cache[i][j];
+        }
+        
+        int left = DFS(grid, i + 1, j, cache);
+        int right = DFS(grid, i + 1, j + 1, cache);
+        
+        cache[i][j] = max(left, right) + grid[i][j];
+        return cache[i][j];
+    }
+};
+
+int main(void) {
+    int n;
+    cin >> n;
+    
+    vector<vector<int>> data(n);
+    for (int i = 0; i < n; ++i) {
+        int tmp;
+        for (int j = 0; j <= i; ++j) {
+            cin >> tmp;
+            data[i].push_back(tmp);
+        }
+    }
+    
+    Solution obj;
+    obj.Solve(data);
+
+    return 0;
+}
+````
+
