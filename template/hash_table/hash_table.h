@@ -22,6 +22,8 @@ class HashTable {
     bool Exists(const std::string& key) const;
     void Remove(const std::string& key);
     std::string Get(const std::string& key) const;
+    
+    void DebugStr() const;
 
  private:
     size_t size_;

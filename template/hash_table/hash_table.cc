@@ -2,6 +2,7 @@
 #include "hash_table.h"
 
 #include <cassert>
+#include <iostream>
 
 namespace walk {
 
@@ -109,6 +110,13 @@ std::string HashTable::Get(const std::string& key) const {
         }
     }
     return "";
+}
+
+void HashTable::DebugStr() const {
+    for (int i = 0; i < size_; ++i) {
+        std::cout << i << " : " << data_[i].get_key() << " : " << data_[i].get_value() << std::endl;
+    }
+    std::cout << " -------------------------------------- " << std::endl;
 }
 
 }   //  namespace walk
