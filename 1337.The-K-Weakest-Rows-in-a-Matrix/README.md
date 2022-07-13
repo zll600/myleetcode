@@ -79,7 +79,7 @@ The rows ordered from weakest to strongest are [0,2,3,1].
 
 ### Solution 1:
 
-
+根据题意来做就可以了，也没有很难
 
 ````c++
 class Solution {
