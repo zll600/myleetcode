@@ -102,3 +102,52 @@ int main(void) {
 }
 ````
 
+
+
+### Solution 2: DP
+
+状态压缩的 dp 数组
+
+`````c++
+#include <bits/stdc++.h>
+
+using namespace std;
+
+class Solution {
+ public:
+    void Solve(vector<vector<int>>& commodities, int T) {
+        const int len = commodities.size();
+        vector<int> dp(T + 1, 0);
+        
+        for (int j = 0; j <= T; ++j) {
+            if (j >= commodities[0][0]) {
+                dp[j] = commodities[0][1];
+            }
+        }
+        
+        for (int i = 1; i < len; ++i) {
+            for (int j = T; j >= commodities[i][0]; --j) {
+                dp[j] = max(dp[j], dp[j - commodities[i][0]] + commodities[i][1]);
+            }
+        }
+        cout << dp[T] << endl;
+    }
+};
+
+int main(void) {
+    int n, m;
+    cin >> n >> m;
+    
+    vector<vector<int>> commodities(m, vector<int>(2, 0));
+    for (int i = 0; i < m; ++i) {
+        cin >> commodities[i][0] >> commodities[i][1];
+        commodities[i][1] *= commodities[i][0];
+    }
+    
+    Solution obj;
+    obj.Solve(commodities, n);
+    
+    return 0;
+}
+`````
+
