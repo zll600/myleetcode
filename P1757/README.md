@@ -45,11 +45,11 @@ $1 \leq m, n \leq 1000$。
 
 这道题目就是在 01 背包的基础上再加上一个分组的前提，状态转移方程还是一样的，同样可以进行状态压缩，
 
-
+这道题目之通过了部分 case，还是需要再理解理解题解区的题目
 
 ````c++
 #include <bits/stdc++.h>
-
+		
 using namespace std;
 
 class Solution {
