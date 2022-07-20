@@ -122,3 +122,26 @@ public:
 };
 ``````
 
+
+
+### Solution: Python3
+
+
+
+````python3
+class Solution:
+    def numOfSubarrays(self, arr: List[int], k: int, threshold: int) -> int:
+        ans = 0
+        total = 0
+        
+        for i in range(len(arr)):
+            total += arr[i]
+            
+            if i - k + 1 >= 0:
+                if total >= threshold * k:
+                    ans += 1
+                
+                total -= arr[i - k + 1]
+        return ans
+````
+
